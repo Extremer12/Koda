@@ -8,7 +8,7 @@ export function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const isDashboard = location.pathname.startsWith('/dashboard');
+
 
   return (
     <nav className="navbar" role="navigation" aria-label="Navegación principal">

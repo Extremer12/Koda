@@ -20,8 +20,7 @@ export function CallbackPage() {
             } else {
               navigate('/dashboard/affiliate', { replace: true });
             }
-          })
-          .catch(() => navigate('/dashboard/affiliate', { replace: true }));
+          });
       } else {
         navigate('/login', { replace: true });
       }

@@ -7,12 +7,12 @@ import { formatPrice, formatDate, generateRefCode } from '../lib/utils';
 import { Ebook, Affiliation } from '../types/database';
 import {
   MousePointerClick, DollarSign, TrendingUp, Link2,
-  Copy, Check, ExternalLink, ShoppingCart,
+  Copy, Check, ShoppingCart,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export function AffiliateDashboard() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { sales, stats, loading: salesLoading } = useAffiliateSales(user?.id);
 
   const [availableEbooks, setAvailableEbooks] = useState<Ebook[]>([]);

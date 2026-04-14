@@ -99,7 +99,7 @@ export function CreatorDashboard() {
       // Upload cover
       let coverUrl = '';
       if (coverFile) {
-        const coverPath = `${user.id}/${timestamp}-cover.${coverFile.name.split('.').pop()}`;
+        const coverPath = `${user!.id}/${timestamp}-cover.${coverFile.name.split('.').pop()}`;
         const { error: coverErr } = await supabase.storage
           .from('covers')
           .upload(coverPath, coverFile);
@@ -109,7 +109,7 @@ export function CreatorDashboard() {
       }
 
       // Upload ebook file
-      const ebookPath = `${user.id}/${timestamp}-ebook.${ebookFile.name.split('.').pop()}`;
+      const ebookPath = `${user!.id}/${timestamp}-ebook.${ebookFile.name.split('.').pop()}`;
       const { error: ebookErr } = await supabase.storage
         .from('ebooks')
         .upload(ebookPath, ebookFile);
@@ -122,7 +122,7 @@ export function CreatorDashboard() {
         price: parseFloat(formData.price),
         cover_url: coverUrl || null,
         file_url: ebookPath,
-        creator_id: user.id,
+        creator_id: user!.id,
         category: formData.category,
         commission_percent: parseInt(formData.commission_percent),
       });

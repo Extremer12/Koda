@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useEbook } from '../hooks/useEbooks';
 import { supabase } from '../lib/supabase';
-import { formatPrice, calculateCommissions, PLATFORM_FEE_PERCENT } from '../lib/utils';
-import { ShoppingCart, ArrowLeft, Download, Shield, Clock, Zap } from 'lucide-react';
+import { formatPrice } from '../lib/utils';
+import { ShoppingCart, ArrowLeft, Shield, Clock, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const categoryLabels: Record<string, string> = {
@@ -33,7 +33,7 @@ export function EbookPage() {
   // Track affiliate clicks
   useEffect(() => {
     if (refCode) {
-      supabase.rpc('increment_clicks', { p_ref_code: refCode }).catch(() => {});
+      supabase.rpc('increment_clicks', { p_ref_code: refCode }).then();
     }
   }, [refCode]);
 

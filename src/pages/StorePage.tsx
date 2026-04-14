@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEbooks } from '../hooks/useEbooks';
 import { EbookCard } from '../components/store/EbookCard';
-import { Search, BookOpen, Sparkles } from 'lucide-react';
+import { Search, BookOpen } from 'lucide-react';
 import { CATEGORIES } from '../lib/utils';
 
 export function StorePage() {
