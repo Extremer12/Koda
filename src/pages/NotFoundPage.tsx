@@ -1,25 +1,26 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 
 export function NotFoundPage() {
   return (
-    <main className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="animate-scale-in" style={{ textAlign: 'center' }}>
-        <h1 style={{
-          fontSize: 'clamp(4rem, 10vw, 8rem)',
-          fontWeight: 800,
-          lineHeight: 1,
-          marginBottom: 'var(--space-md)',
-        }}>
-          <span className="text-gradient">404</span>
+    <main className="bg-surface min-h-screen flex items-center justify-center px-6">
+      <div className="text-center animate-slide-up">
+        <h1 className="font-headline font-black text-[8rem] md:text-[12rem] leading-none text-on-surface opacity-5 select-none">
+          404
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: 'var(--space-xl)' }}>
-          La página que buscas no existe.
-        </p>
-        <Link to="/" className="btn btn-primary btn-lg">
-          <ArrowLeft size={18} />
-          Volver al inicio
-        </Link>
+        <div className="-mt-12 md:-mt-24 relative z-10">
+          <h2 className="font-headline font-bold text-2xl md:text-3xl text-on-surface uppercase tracking-tight mb-4">
+            Ubicación fuera del archivo
+          </h2>
+          <p className="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant opacity-60 max-w-xs mx-auto mb-12">
+            La página que busca no forma parte de la colección actual o ha sido removida permanentemente.
+          </p>
+          <Link 
+            to="/" 
+            className="inline-block bg-primary px-12 py-5 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95"
+          >
+            Regresar al inicio
+          </Link>
+        </div>
       </div>
     </main>
   );

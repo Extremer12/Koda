@@ -34,11 +34,14 @@ export default function App() {
           position="bottom-right"
           toastOptions={{
             style: {
-              background: '#18182a',
-              color: '#f5f5f7',
+              background: '#2d2f2c',
+              color: '#f7f7f2',
               border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: '12px',
-              fontSize: '0.9rem',
+              borderRadius: '0',
+              fontSize: '0.8rem',
+              fontFamily: 'Inter, sans-serif',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
             },
           }}
         />

@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import { Download, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -38,48 +37,41 @@ export function DownloadPage() {
   }, [token]);
 
   return (
-    <main className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="glass-card-static animate-scale-in" style={{
-        padding: 'var(--space-2xl)',
-        width: '100%',
-        maxWidth: '480px',
-        textAlign: 'center',
-      }}>
+    <main className="bg-surface min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-md animate-slide-up bg-white p-12 shadow-[0_40px_80px_-20px_rgba(45,47,44,0.1)] border border-[#f1f1ec] text-center">
         {status === 'loading' && (
-          <>
-            <div className="spinner spinner-lg" style={{ margin: '0 auto var(--space-lg)' }} />
-            <p style={{ color: 'var(--text-secondary)' }}>Verificando tu compra...</p>
-          </>
+          <div className="flex flex-col items-center">
+            <div className="h-12 w-[1px] bg-primary animate-curatorial-pulse mb-8"></div>
+            <p className="font-label text-xs uppercase tracking-[0.2em] text-on-surface-variant opacity-60">Verificando adquisición...</p>
+          </div>
         )}
 
         {status === 'ready' && (
           <>
-            <div style={{
-              width: '72px',
-              height: '72px',
-              borderRadius: 'var(--radius-full)',
-              background: 'var(--success-bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto var(--space-lg)',
-            }}>
-              <CheckCircle size={36} style={{ color: 'var(--success)' }} />
+            <div className="mb-12">
+              <span className="material-symbols-outlined text-6xl text-primary opacity-20">check_circle</span>
             </div>
-            <h2 style={{ marginBottom: 'var(--space-sm)' }}>¡Pago confirmado!</h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xl)', fontSize: '0.9rem' }}>
-              Tu e-book <strong style={{ color: 'var(--text-primary)' }}>{ebookTitle}</strong> está listo para descargar.
+            <h2 className="font-headline font-black text-2xl text-on-surface uppercase tracking-tight mb-4">Adquisición Confirmada</h2>
+            <p className="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60 leading-relaxed mb-12">
+              La edición <strong className="text-on-surface">{ebookTitle}</strong> ha sido verificada y está lista para ser incorporada a su biblioteca personal.
             </p>
             {downloadUrl && (
-              <a href={downloadUrl} className="btn btn-primary btn-lg w-full" download>
-                <Download size={20} />
-                Descargar E-Book
+              <a 
+                href={downloadUrl} 
+                className="w-full bg-primary py-5 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-[0.98] flex items-center justify-center gap-3" 
+                download
+              >
+                <span className="material-symbols-outlined text-sm">download</span>
+                Descargar ahora
               </a>
             )}
-            <div style={{ marginTop: 'var(--space-xl)' }}>
-              <Link to="/" className="btn btn-ghost">
-                <ArrowLeft size={16} />
-                Explorar más e-books
+            <div className="mt-12 pt-8 border-t border-outline-variant/10 text-center">
+              <Link 
+                to="/" 
+                className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-sm">home</span>
+                Volver al archivo
               </Link>
             </div>
           </>
@@ -87,23 +79,29 @@ export function DownloadPage() {
 
         {status === 'expired' && (
           <>
-            <h2 style={{ marginBottom: 'var(--space-md)' }}>Enlace expirado</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 'var(--space-xl)' }}>
-              Este enlace de descarga ha expirado. Contacta a soporte para obtener uno nuevo.
+            <h2 className="font-headline font-black text-2xl text-on-surface uppercase tracking-tight mb-4">Enlace Expirado</h2>
+            <p className="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60 leading-relaxed mb-12">
+              Esta credencial de descarga ha caducado por motivos de seguridad permanente.
             </p>
-            <a href="mailto:zioncode25@gmail.com" className="btn btn-primary">
-              Contactar soporte
+            <a 
+              href="mailto:soporte@koda.com" 
+              className="w-full bg-on-background py-5 text-white font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-primary flex items-center justify-center gap-3"
+            >
+              Contactar Soporte
             </a>
           </>
         )}
 
         {status === 'error' && (
           <>
-            <h2 style={{ marginBottom: 'var(--space-md)' }}>Error</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 'var(--space-xl)' }}>
-              No pudimos verificar tu compra. Intenta de nuevo o contacta a soporte.
+            <h2 className="font-headline font-black text-2xl text-on-surface uppercase tracking-tight mb-4">Error de Validación</h2>
+            <p className="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60 leading-relaxed mb-12">
+              No se ha podido autenticar la transacción. Por favor, intente de nuevo o consulte con nuestro equipo.
             </p>
-            <Link to="/" className="btn btn-primary">
+            <Link 
+              to="/" 
+              className="w-full bg-primary py-5 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3"
+            >
               Volver al inicio
             </Link>
           </>

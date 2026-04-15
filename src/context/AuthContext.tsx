@@ -9,6 +9,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
 }
@@ -75,6 +76,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }
 
+  async function signInWithEmail(email: string) {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error;
+  }
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -95,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, profile, loading, signInWithGoogle, signOut, updateProfile }}
+      value={{ user, session, profile, loading, signInWithGoogle, signInWithEmail, signOut, updateProfile }}
     >
       {children}
     </AuthContext.Provider>

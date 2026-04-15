@@ -1,68 +1,86 @@
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { BookOpen } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function LoginPage() {
-  const { user, profile, loading, signInWithGoogle } = useAuth();
+  const { signInWithEmail } = useAuth();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  if (loading) {
-    return (
-      <main className="page">
-        <div className="page-loader"><div className="spinner spinner-lg" /></div>
-      </main>
-    );
-  }
-
-  if (user && profile) {
-    return <Navigate to={profile.role === 'creator' ? '/dashboard/creator' : '/dashboard/affiliate'} replace />;
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await signInWithEmail(email);
+    } catch (err) {
+      // toast is handled in context
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <main className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="glass-card-static animate-scale-in" style={{
-        padding: 'var(--space-2xl)',
-        width: '100%',
-        maxWidth: '420px',
-        textAlign: 'center',
-      }}>
-        <div style={{
-          width: '72px',
-          height: '72px',
-          borderRadius: 'var(--radius-xl)',
-          background: 'rgba(124, 58, 237, 0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto var(--space-lg)',
-        }}>
-          <BookOpen size={32} style={{ color: 'var(--accent-secondary)' }} />
+    <main className="bg-surface min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-sm animate-slide-up">
+        <div className="text-center mb-12">
+          <Link to="/" className="text-4xl font-black tracking-[-0.05em] text-primary hover:opacity-80 transition-opacity uppercase">
+            KODA
+          </Link>
+          <p className="font-label text-[10px] uppercase tracking-[0.4em] text-on-surface-variant opacity-40 mt-4">
+            Acceso al Archivo
+          </p>
         </div>
 
-        <h1 style={{ fontSize: '1.6rem', marginBottom: 'var(--space-sm)' }}>
-          Bienvenido a <span className="text-gradient">Koda</span>
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 'var(--space-xl)' }}>
-          Inicia sesión para acceder a tu panel de creador o afiliado.
-        </p>
+        <div className="bg-white p-8 md:p-10 shadow-[0_40px_80px_-20px_rgba(45,47,44,0.1)] border border-[#f1f1ec]">
+          <h2 className="font-headline font-bold text-xl text-on-surface uppercase tracking-tight mb-8">
+            Iniciar Sesión
+          </h2>
+          
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-2">
+              <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="email">
+                Dirección de Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                className="w-full bg-transparent border-b border-outline-variant/30 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20"
+                placeholder="TU@EMAIL.COM"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-        <button
-          onClick={signInWithGoogle}
-          className="btn btn-secondary btn-lg w-full"
-          id="google-login-btn"
-          style={{ gap: 'var(--space-md)' }}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Continuar con Google
-        </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary py-5 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
+            >
+              {loading ? (
+                <div className="h-4 w-[1px] bg-on-primary animate-curatorial-pulse"></div>
+              ) : (
+                'Enviar enlace mágico'
+              )}
+            </button>
+          </form>
 
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', marginTop: 'var(--space-lg)', lineHeight: 1.6 }}>
-          Los compradores no necesitan cuenta. Este login es solo para creadores y afiliados.
-        </p>
+          <div className="mt-12 pt-8 border-t border-outline-variant/10 text-center">
+            <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 leading-relaxed">
+              Te enviaremos un enlace de acceso instantáneo a tu correo electrónico. No se requiere contraseña.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link 
+            to="/" 
+            className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">home</span>
+            Volver al inicio
+          </Link>
+        </div>
       </div>
     </main>
   );

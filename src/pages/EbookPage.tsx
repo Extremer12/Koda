@@ -3,7 +3,6 @@ import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useEbook } from '../hooks/useEbooks';
 import { supabase } from '../lib/supabase';
 import { formatPrice } from '../lib/utils';
-import { ShoppingCart, ArrowLeft, Shield, Clock, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const categoryLabels: Record<string, string> = {
@@ -52,8 +51,6 @@ export function EbookPage() {
 
     setSubmitting(true);
     try {
-      // In production, this would call the Edge Function that creates
-      // a Mercado Pago preference and returns the checkout URL
       const response = await supabase.functions.invoke('create-preference', {
         body: {
           ebook_id: ebook.id,
@@ -86,21 +83,19 @@ export function EbookPage() {
 
   if (loading) {
     return (
-      <main className="page">
-        <div className="page-loader">
-          <div className="spinner spinner-lg" />
-        </div>
+      <main className="bg-surface min-h-screen flex items-center justify-center">
+        <div className="h-12 w-[1px] bg-primary animate-curatorial-pulse"></div>
       </main>
     );
   }
 
   if (error || !ebook) {
     return (
-      <main className="page">
-        <div className="container empty-state">
-          <h2>E-book no encontrado</h2>
-          <p className="empty-state-desc">El e-book que buscas no existe o fue eliminado.</p>
-          <Link to="/" className="btn btn-primary" style={{ marginTop: 'var(--space-md)' }}>
+      <main className="bg-surface min-h-screen pt-32 px-6">
+        <div className="max-w-xl mx-auto text-center border border-dashed border-outline-variant/30 p-12">
+          <h2 className="font-headline font-bold text-2xl text-on-surface uppercase tracking-tight">E-book no encontrado</h2>
+          <p className="font-label text-xs uppercase tracking-widest text-on-surface-variant mt-4 opacity-50">El archivo solicitado no está disponible.</p>
+          <Link to="/" className="inline-block mt-12 bg-primary px-8 py-3 text-on-primary font-label text-xs font-bold uppercase tracking-widest transition-transform active:scale-95">
             Volver a la tienda
           </Link>
         </div>
@@ -111,157 +106,138 @@ export function EbookPage() {
   const creatorName = (ebook as any).creator?.full_name || 'Autor';
 
   return (
-    <main className="page">
-      <div className="container" style={{ paddingTop: 'var(--space-xl)', paddingBottom: 'var(--space-4xl)' }}>
-        <Link to="/" className="btn btn-ghost" style={{ marginBottom: 'var(--space-lg)' }}>
-          <ArrowLeft size={18} />
-          Volver a la tienda
+    <main className="bg-surface min-h-screen pt-24 md:pt-32 pb-24 px-6 md:px-12">
+      <div className="max-w-[1920px] mx-auto">
+        <Link 
+          to="/" 
+          className="inline-flex items-center gap-2 font-label text-[10px] md:text-xs uppercase tracking-widest font-bold text-on-surface-variant hover:text-primary transition-colors mb-12"
+        >
+          <span className="material-symbols-outlined text-sm">arrow_back</span>
+          Volver al archivo
         </Link>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 'var(--space-2xl)', alignItems: 'start' }}>
-          {/* Left: Ebook Info */}
-          <div className="animate-slide-up">
-            <div style={{
-              borderRadius: 'var(--radius-2xl)',
-              overflow: 'hidden',
-              marginBottom: 'var(--space-xl)',
-              maxWidth: '400px',
-              aspectRatio: '3/4',
-              background: 'var(--bg-tertiary)',
-            }}>
-              {ebook.cover_url ? (
-                <img
-                  src={ebook.cover_url}
-                  alt={ebook.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                <div style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '5rem',
-                  opacity: 0.2,
-                }}>
-                  📖
-                </div>
-              )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24 items-start">
+          {/* Left: Product Info */}
+          <div className="lg:col-span-7 animate-slide-up">
+            <div className="aspect-[3/4] md:aspect-auto md:h-[700px] overflow-hidden bg-surface-container-low mb-12 shadow-[40px_40px_80px_rgba(45,47,44,0.08)]">
+              <img
+                src={ebook.cover_url || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80'}
+                alt={ebook.title}
+                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+              />
             </div>
 
-            <span className="badge badge-accent" style={{ marginBottom: 'var(--space-md)' }}>
-              {categoryLabels[ebook.category] || ebook.category}
-            </span>
+            <div className="flex items-center gap-4 mb-8">
+              <span className="bg-primary text-on-primary font-label text-[10px] px-3 py-1 uppercase tracking-widest">
+                Edición Permanente
+              </span>
+              <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">
+                {categoryLabels[ebook.category] || ebook.category}
+              </span>
+            </div>
 
-            <h1 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', marginBottom: 'var(--space-md)', marginTop: 'var(--space-sm)' }}>
+            <h1 className="font-headline font-black text-4xl md:text-7xl leading-[0.9] tracking-tight uppercase text-on-surface mb-8">
               {ebook.title}
             </h1>
 
-            <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
-              por <strong style={{ color: 'var(--text-primary)' }}>{creatorName}</strong>
+            <p className="font-headline font-bold text-xl text-on-surface-variant mb-12 italic">
+              por <span className="text-on-surface not-italic">{creatorName}</span>
             </p>
 
             {ebook.description && (
-              <p style={{
-                color: 'var(--text-secondary)',
-                lineHeight: 1.8,
-                marginTop: 'var(--space-lg)',
-                fontSize: '0.95rem',
-                whiteSpace: 'pre-wrap',
-              }}>
-                {ebook.description}
-              </p>
+              <div className="prose prose-sm md:prose-base max-w-none">
+                <p className="font-body text-on-surface-variant leading-relaxed whitespace-pre-wrap">
+                  {ebook.description}
+                </p>
+              </div>
             )}
 
-            {/* Trust badges */}
-            <div style={{
-              display: 'flex',
-              gap: 'var(--space-xl)',
-              marginTop: 'var(--space-2xl)',
-              flexWrap: 'wrap',
-            }}>
+            {/* Trust Badges */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-24 pt-12 border-t border-outline-variant/10">
               {[
-                { icon: <Zap size={18} />, text: 'Descarga inmediata' },
-                { icon: <Shield size={18} />, text: 'Pago seguro' },
-                { icon: <Clock size={18} />, text: 'Acceso de por vida' },
+                { icon: 'speed', text: 'Descarga inmediata', label: 'Entrega' },
+                { icon: 'verified_user', text: 'Checkout seguro', label: 'Protección' },
+                { icon: 'all_inclusive', text: 'Acceso de por vida', label: 'Eternidad' },
               ].map((item, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', color: 'var(--text-tertiary)', fontSize: '0.85rem' }}>
-                  {item.icon}
-                  {item.text}
+                <div key={i} className="flex flex-col gap-2">
+                  <span className="font-label text-[8px] uppercase tracking-[0.2em] text-primary font-bold">{item.label}</span>
+                  <div className="flex items-center gap-2 text-on-surface">
+                    <span className="material-symbols-outlined text-sm">{item.icon}</span>
+                    <span className="font-label text-[10px] uppercase tracking-widest font-bold">{item.text}</span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right: Checkout */}
-          <div className="checkout-section animate-slide-up stagger-2">
-            <div className="checkout-price text-gradient">
-              {formatPrice(ebook.price)}
+          {/* Right: Checkout (Fixed-like behavior on large screen) */}
+          <div className="lg:col-span-5 lg:sticky lg:top-32 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-white p-8 md:p-12 shadow-[0_40px_80px_-20px_rgba(45,47,44,0.1)] border border-[#f1f1ec]">
+              <div className="flex justify-between items-baseline mb-12">
+                <span className="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant opacity-40">Precio de Archivo</span>
+                <span className="font-headline font-black text-4xl md:text-5xl text-on-surface">{formatPrice(ebook.price)}</span>
+              </div>
+
+              <form onSubmit={handleCheckout} className="space-y-8">
+                <div className="space-y-2">
+                  <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="buyer-name">Nombre Completo</label>
+                  <input
+                    id="buyer-name"
+                    type="text"
+                    className={`w-full bg-transparent border-b ${errors.name ? 'border-error' : 'border-outline-variant/30'} py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20`}
+                    placeholder="INTRODUCE TU NOMBRE"
+                    value={buyerName}
+                    onChange={(e) => { setBuyerName(e.target.value); setErrors(prev => ({ ...prev, name: undefined })); }}
+                  />
+                  {errors.name && <p className="text-[10px] text-error uppercase tracking-widest font-bold">{errors.name}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="buyer-email">Email de Entrega</label>
+                  <input
+                    id="buyer-email"
+                    type="email"
+                    className={`w-full bg-transparent border-b ${errors.email ? 'border-error' : 'border-outline-variant/30'} py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20`}
+                    placeholder="TU@EMAIL.COM"
+                    value={buyerEmail}
+                    onChange={(e) => { setBuyerEmail(e.target.value); setErrors(prev => ({ ...prev, email: undefined })); }}
+                  />
+                  {errors.email && <p className="text-[10px] text-error uppercase tracking-widest font-bold">{errors.email}</p>}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-primary py-6 text-on-primary font-label text-xs font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
+                >
+                  {submitting ? (
+                    <div className="h-4 w-[1px] bg-on-primary animate-curatorial-pulse"></div>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-sm">shopping_bag</span>
+                      Adquirir ahora
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-12 pt-8 border-t border-outline-variant/10 text-center">
+                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 leading-relaxed">
+                  Serás redirigido a Mercado Pago para completar tu transacción de forma segura mediante encriptación bancaria.
+                </p>
+              </div>
             </div>
-
-            <form onSubmit={handleCheckout}>
-              <div className="input-group" style={{ marginBottom: 'var(--space-md)' }}>
-                <label className="input-label" htmlFor="buyer-name">Tu nombre</label>
-                <input
-                  id="buyer-name"
-                  type="text"
-                  className={`input-field ${errors.name ? 'input-error' : ''}`}
-                  placeholder="Juan Pérez"
-                  value={buyerName}
-                  onChange={(e) => { setBuyerName(e.target.value); setErrors(prev => ({ ...prev, name: undefined })); }}
-                  autoComplete="name"
-                />
-                {errors.name && <span className="input-error-msg">{errors.name}</span>}
-              </div>
-
-              <div className="input-group" style={{ marginBottom: 'var(--space-lg)' }}>
-                <label className="input-label" htmlFor="buyer-email">Tu email</label>
-                <input
-                  id="buyer-email"
-                  type="email"
-                  className={`input-field ${errors.email ? 'input-error' : ''}`}
-                  placeholder="tu@email.com"
-                  value={buyerEmail}
-                  onChange={(e) => { setBuyerEmail(e.target.value); setErrors(prev => ({ ...prev, email: undefined })); }}
-                  autoComplete="email"
-                />
-                {errors.email && <span className="input-error-msg">{errors.email}</span>}
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary btn-lg w-full"
-                disabled={submitting}
-                id="checkout-btn"
-              >
-                {submitting ? (
-                  <div className="spinner" style={{ width: '20px', height: '20px', borderWidth: '2px' }} />
-                ) : (
-                  <>
-                    <ShoppingCart size={20} />
-                    Comprar ahora
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="checkout-divider" />
-
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-tertiary)', textAlign: 'center', lineHeight: 1.6 }}>
-              Serás redirigido a Mercado Pago para completar tu compra de forma segura. Tras el pago, podrás descargar tu e-book al instante.
-            </p>
+            
+            {/* Secondary Bento in Sidebar for "More from author" - Placeholder concept */}
+            <div className="mt-12 border-l border-outline-variant/10 pl-8">
+               <span className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary font-bold mb-4 block">Garantía Curatorial</span>
+               <p className="font-body text-xs text-on-surface-variant leading-relaxed opacity-60 italic">
+                 "Cada pieza en el archivo Koda ha sido sometida a un riguroso proceso de revisión técnica y estética para asegurar la máxima calidad de contenido."
+               </p>
+            </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .page > .container > div:last-child {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </main>
   );
 }

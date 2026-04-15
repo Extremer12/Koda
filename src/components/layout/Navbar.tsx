@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { BookOpen, LogIn, LogOut, LayoutDashboard, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 export function Navbar() {
@@ -8,120 +7,134 @@ export function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-
-
   return (
-    <nav className="navbar" role="navigation" aria-label="Navegación principal">
-      <div className="navbar-inner">
-        <Link to="/" className="navbar-brand" aria-label="Ir al inicio">
-          <BookOpen size={28} style={{ color: 'var(--accent-secondary)' }} />
-          <span className="navbar-brand-text text-gradient">Koda</span>
-        </Link>
-
-        <div className="navbar-links">
-          <Link
-            to="/"
-            className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`}
+    <>
+      <nav className="sticky top-0 z-50 w-full glass-nav luminous-shadow">
+        <div className="flex items-center justify-between px-6 lg:px-12 py-4 lg:py-6 max-w-[1920px] mx-auto">
+          {/* Branding */}
+          <Link 
+            to="/" 
+            className="text-3xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity"
+            onClick={() => setMobileOpen(false)}
           >
-            Explorar
+            KODA
           </Link>
-          {profile?.role === 'creator' && (
-            <Link
-              to="/dashboard/creator"
-              className={`navbar-link ${location.pathname.includes('/creator') ? 'active' : ''}`}
-            >
-              Mi Panel
-            </Link>
-          )}
-          {(profile?.role === 'affiliate' || profile?.role === 'creator') && (
-            <Link
-              to="/dashboard/affiliate"
-              className={`navbar-link ${location.pathname.includes('/affiliate') ? 'active' : ''}`}
-            >
-              Afiliados
-            </Link>
-          )}
-        </div>
 
-        <div className="navbar-actions">
-          {user ? (
-            <>
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-8 font-label tracking-tight text-sm">
+            <Link
+              to="/"
+              className={`${
+                location.pathname === '/' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant font-medium hover:text-primary'
+              } transition-all duration-300`}
+            >
+              Explorar
+            </Link>
+            
+            {profile?.role === 'creator' && (
               <Link
-                to={profile?.role === 'creator' ? '/dashboard/creator' : '/dashboard/affiliate'}
-                className="btn btn-ghost"
-                aria-label="Ir al dashboard"
+                to="/dashboard/creator"
+                className={`${
+                  location.pathname.includes('/creator') 
+                    ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                    : 'text-on-surface-variant font-medium hover:text-primary'
+                } transition-all duration-300`}
               >
-                <LayoutDashboard size={18} />
-                <span className="nav-desktop-only">{profile?.full_name?.split(' ')[0] || 'Dashboard'}</span>
+                Ediciones
               </Link>
-              <button
-                onClick={signOut}
-                className="btn btn-ghost"
-                aria-label="Cerrar sesión"
+            )}
+
+            {(profile?.role === 'affiliate' || profile?.role === 'creator') && (
+              <Link
+                to="/dashboard/affiliate"
+                className={`${
+                  location.pathname.includes('/affiliate') 
+                    ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                    : 'text-on-surface-variant font-medium hover:text-primary'
+                } transition-all duration-300`}
               >
-                <LogOut size={18} />
+                Socios
+              </Link>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-4 lg:gap-6">
+            <div className="relative hidden xl:block">
+              <input 
+                className="bg-surface-container-low border-none rounded-full py-2 pl-6 pr-12 w-64 focus:ring-2 focus:ring-primary text-sm transition-all focus:outline-none" 
+                placeholder="Buscar historias..." 
+                type="text"
+                disabled
+                title="Búsqueda global (Próximamente)"
+              />
+              <span className="material-symbols-outlined absolute right-4 top-2 text-outline-variant">search</span>
+            </div>
+            
+            <div className="flex items-center gap-2 lg:gap-4">
+              {/* Fake Cart Icon for aesthetics as requested by design */}
+              <button className="active:scale-95 transition-transform hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low" title="Tu Carrito (No aplica)">
+                <span className="material-symbols-outlined text-on-surface-variant">shopping_cart</span>
               </button>
-            </>
-          ) : (
-            <Link to="/login" className="btn btn-primary">
-              <LogIn size={18} />
-              <span>Ingresar</span>
-            </Link>
-          )}
 
-          <button
-            className="btn btn-icon btn-ghost mobile-menu-btn"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menú móvil"
-            style={{ display: 'none' }}
-          >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+              {user ? (
+                <>
+                  <Link 
+                    to={profile?.role === 'creator' ? '/dashboard/creator' : '/dashboard/affiliate'}
+                    className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
+                  >
+                    <span className="material-symbols-outlined text-on-surface-variant">account_circle</span>
+                  </Link>
+                  <button 
+                    onClick={signOut}
+                    className="active:scale-95 transition-transform hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-error-container hover:text-on-error-container"
+                    title="Cerrar Sessión"
+                  >
+                    <span className="material-symbols-outlined text-on-surface-variant group-hover:text-on-error-container">logout</span>
+                  </button>
+                </>
+              ) : (
+                <Link to="/login">
+                  <button className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full bg-surface-container-low hover:bg-primary hover:text-white text-primary">
+                    <span className="material-symbols-outlined">login</span>
+                  </button>
+                </Link>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              <span className="material-symbols-outlined text-2xl text-on-surface">
+                {mobileOpen ? 'close' : 'menu'}
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu Dropdown */}
       {mobileOpen && (
-        <div
-          className="mobile-nav-menu animate-slide-down"
-          style={{
-            position: 'absolute',
-            top: '72px',
-            left: 0,
-            right: 0,
-            background: 'var(--bg-secondary)',
-            borderBottom: '1px solid var(--border-glass)',
-            padding: 'var(--space-lg)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--space-sm)',
-          }}
-        >
-          <Link to="/" className="sidebar-link" onClick={() => setMobileOpen(false)}>
-            Explorar
-          </Link>
+        <div className="md:hidden fixed top-[72px] lg:top-[88px] left-0 w-full bg-white/95 backdrop-blur-xl border-b border-outline-variant/10 px-6 py-8 flex flex-col gap-6 font-label font-bold text-sm animate-slide-down z-40 shadow-xl">
+          <Link to="/" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Explorar</Link>
           {profile?.role === 'creator' && (
-            <Link to="/dashboard/creator" className="sidebar-link" onClick={() => setMobileOpen(false)}>
-              Mi Panel
-            </Link>
+            <Link to="/dashboard/creator" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Ediciones</Link>
           )}
           {profile && (
-            <Link to="/dashboard/affiliate" className="sidebar-link" onClick={() => setMobileOpen(false)}>
-              Afiliados
-            </Link>
+            <Link to="/dashboard/affiliate" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Socios</Link>
+          )}
+          {!user && (
+            <Link to="/login" onClick={() => setMobileOpen(false)} className="text-primary">Iniciar Sesión</Link>
+          )}
+          {user && (
+            <button onClick={() => { signOut(); setMobileOpen(false); }} className="text-left text-error">Cerrar Sesión</button>
           )}
         </div>
       )}
-
-      <style>{`
-        @media (max-width: 768px) {
-          .mobile-menu-btn { display: flex !important; }
-          .nav-desktop-only { display: none; }
-        }
-        @media (min-width: 769px) {
-          .nav-desktop-only { display: inline; }
-        }
-      `}</style>
-    </nav>
+    </>
   );
 }

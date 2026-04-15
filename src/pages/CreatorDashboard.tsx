@@ -5,10 +5,6 @@ import { useCreatorEbooks } from '../hooks/useEbooks';
 import { useCreatorSales } from '../hooks/useSales';
 import { supabase } from '../lib/supabase';
 import { formatPrice, formatDate, CATEGORIES } from '../lib/utils';
-import {
-  BookOpen, DollarSign, ShoppingCart, TrendingUp,
-  Plus, Upload, X, Eye, EyeOff, BarChart3,
-} from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import toast from 'react-hot-toast';
 
@@ -32,12 +28,15 @@ export function CreatorDashboard() {
   const ebookInputRef = useRef<HTMLInputElement>(null);
 
   if (authLoading) {
-    return <main className="page"><div className="page-loader"><div className="spinner spinner-lg" /></div></main>;
+    return (
+      <main className="bg-surface min-h-screen flex items-center justify-center">
+        <div className="h-12 w-[1px] bg-primary animate-curatorial-pulse"></div>
+      </main>
+    );
   }
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // Allow role change to creator if currently affiliate
   async function switchToCreator() {
     try {
       await updateProfile({ role: 'creator' });
@@ -50,13 +49,16 @@ export function CreatorDashboard() {
 
   if (profile?.role !== 'creator' && profile?.role !== 'admin') {
     return (
-      <main className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="glass-card-static animate-scale-in" style={{ padding: 'var(--space-2xl)', maxWidth: '480px', textAlign: 'center' }}>
-          <h2 style={{ marginBottom: 'var(--space-md)' }}>Panel de Creador</h2>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xl)' }}>
-            Actualmente eres afiliado. ¿Quieres convertirte en creador para subir tus propios e-books?
+      <main className="bg-surface min-h-screen flex items-center justify-center px-6">
+        <div className="max-w-md w-full bg-white p-12 shadow-[0_40px_80px_-20px_rgba(45,47,44,0.1)] border border-[#f1f1ec] text-center">
+          <h2 className="font-headline font-bold text-2xl text-on-surface uppercase tracking-tight mb-6">Panel de Creador</h2>
+          <p className="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60 leading-relaxed mb-12">
+            Actualmente eres afiliado. ¿Quieres convertirte en creador para publicar tus propios e-books en el archivo?
           </p>
-          <button onClick={switchToCreator} className="btn btn-primary btn-lg">
+          <button 
+            onClick={switchToCreator} 
+            className="w-full bg-primary py-4 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all active:scale-95"
+          >
             Ser Creador
           </button>
         </div>
@@ -64,7 +66,6 @@ export function CreatorDashboard() {
     );
   }
 
-  // Chart data (last 30 days)
   const chartData = (() => {
     const days: Record<string, number> = {};
     for (let i = 29; i >= 0; i--) {
@@ -95,27 +96,19 @@ export function CreatorDashboard() {
     setSubmitting(true);
     try {
       const timestamp = Date.now();
-
-      // Upload cover
       let coverUrl = '';
       if (coverFile) {
         const coverPath = `${user!.id}/${timestamp}-cover.${coverFile.name.split('.').pop()}`;
-        const { error: coverErr } = await supabase.storage
-          .from('covers')
-          .upload(coverPath, coverFile);
+        const { error: coverErr } = await supabase.storage.from('covers').upload(coverPath, coverFile);
         if (coverErr) throw coverErr;
         const { data: { publicUrl } } = supabase.storage.from('covers').getPublicUrl(coverPath);
         coverUrl = publicUrl;
       }
 
-      // Upload ebook file
       const ebookPath = `${user!.id}/${timestamp}-ebook.${ebookFile.name.split('.').pop()}`;
-      const { error: ebookErr } = await supabase.storage
-        .from('ebooks')
-        .upload(ebookPath, ebookFile);
+      const { error: ebookErr } = await supabase.storage.from('ebooks').upload(ebookPath, ebookFile);
       if (ebookErr) throw ebookErr;
 
-      // Insert ebook record
       const { error } = await supabase.from('ebooks').insert({
         title: formData.title.trim(),
         description: formData.description.trim() || null,
@@ -153,249 +146,286 @@ export function CreatorDashboard() {
   }
 
   return (
-    <main className="page">
-      <div className="container" style={{ paddingTop: 'var(--space-xl)', paddingBottom: 'var(--space-4xl)' }}>
-        {/* Header */}
-        <div className="dashboard-header">
-          <div className="flex justify-between items-center" style={{ flexWrap: 'wrap', gap: 'var(--space-md)' }}>
-            <div>
-              <h1 className="dashboard-title">Panel de Creador</h1>
-              <p className="dashboard-subtitle">Gestiona tus e-books y ventas</p>
-            </div>
-            <button onClick={() => setShowForm(true)} className="btn btn-primary">
-              <Plus size={18} />
-              Nuevo E-Book
-            </button>
+    <main className="bg-surface min-h-screen pt-24 md:pt-32 pb-24 px-6 md:px-12">
+      <div className="max-w-[1920px] mx-auto">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16 animate-slide-up">
+          <div>
+            <span className="font-label text-[10px] uppercase tracking-[0.4em] text-primary font-black mb-4 block">Gestión de Archivo</span>
+            <h1 className="font-headline font-black text-4xl md:text-6xl text-on-surface uppercase tracking-tight">Panel de Creador</h1>
           </div>
-        </div>
+          <button 
+            onClick={() => setShowForm(true)} 
+            className="bg-primary px-8 py-4 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95 flex items-center gap-3"
+          >
+            <span className="material-symbols-outlined text-sm">add</span>
+            Nuevo E-Book
+          </button>
+        </header>
 
         {/* Stats Grid */}
-        <div className="grid grid-4" style={{ marginBottom: 'var(--space-xl)' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
-            { icon: <BookOpen size={20} />, label: 'E-Books', value: stats.totalBooks, cls: 'accent' },
-            { icon: <ShoppingCart size={20} />, label: 'Ventas', value: stats.approvedSales, cls: 'success' },
-            { icon: <DollarSign size={20} />, label: 'Ingresos', value: formatPrice(stats.totalRevenue), cls: 'accent' },
-            { icon: <TrendingUp size={20} />, label: 'Tasa', value: stats.totalSales > 0 ? `${Math.round((stats.approvedSales / stats.totalSales) * 100)}%` : '0%', cls: 'warning' },
+            { icon: 'book', label: 'Ediciones', value: stats.totalBooks },
+            { icon: 'shopping_cart', label: 'Ventas Totales', value: stats.approvedSales },
+            { icon: 'payments', label: 'Ingresos Netos', value: formatPrice(stats.totalRevenue) },
+            { icon: 'trending_up', label: 'Tasa de Éxito', value: stats.totalSales > 0 ? `${Math.round((stats.approvedSales / stats.totalSales) * 100)}%` : '0%' },
           ].map((s, i) => (
-            <div key={i} className={`stat-card animate-slide-up stagger-${i + 1}`}>
-              <div className={`stat-card-icon ${s.cls}`}>{s.icon}</div>
-              <span className="stat-card-label">{s.label}</span>
-              <span className="stat-card-value">{s.value}</span>
+            <div key={i} className="bg-white p-8 border border-[#f1f1ec] animate-slide-up" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="flex justify-between items-start mb-6">
+                <span className="material-symbols-outlined text-primary text-xl opacity-40">{s.icon}</span>
+                <span className="font-label text-[8px] uppercase tracking-[0.2em] text-on-surface-variant font-bold">{s.label}</span>
+              </div>
+              <span className="font-headline font-black text-3xl text-on-surface">{s.value}</span>
             </div>
           ))}
         </div>
 
         {/* Chart */}
-        <div className="chart-container" style={{ marginBottom: 'var(--space-xl)' }}>
-          <div className="chart-header">
-            <h3 className="chart-title">
-              <BarChart3 size={18} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'middle' }} />
-              Ingresos últimos 30 días
-            </h3>
+        <section className="bg-white p-8 md:p-12 border border-[#f1f1ec] mb-12 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
+            <h3 className="font-headline font-bold text-xl text-on-surface uppercase tracking-tight">Evolución de Ingresos</h3>
+            <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40">Últimos 30 días</span>
           </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorMonto" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{ fill: '#636366', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#636366', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{ backgroundColor: '#18182a', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', fontSize: '0.85rem' }}
-                labelStyle={{ color: '#8e8e93' }}
-              />
-              <Area type="monotone" dataKey="monto" stroke="#7c3aed" strokeWidth={2} fill="url(#colorMonto)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorMonto" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#7d10e7" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#7d10e7" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fill: '#2d2f2c', fontSize: 10, fontFamily: 'Inter' }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  dy={10}
+                />
+                <YAxis 
+                  tick={{ fill: '#2d2f2c', fontSize: 10, fontFamily: 'Inter' }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                  dx={-10}
+                />
+                <Tooltip
+                  contentStyle={{ 
+                    backgroundColor: '#ffffff', 
+                    border: '1px solid #f1f1ec', 
+                    borderRadius: '0.5rem', 
+                    fontSize: '12px', 
+                    fontFamily: '"Plus Jakarta Sans", sans-serif',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.05)'
+                  }}
+                  itemStyle={{ color: '#7d10e7', fontWeight: 'bold' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="monto" 
+                  stroke="#7d10e7" 
+                  strokeWidth={3} 
+                  fillOpacity={1} 
+                  fill="url(#colorMonto)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
 
-        {/* My Ebooks */}
-        <div style={{ marginBottom: 'var(--space-xl)' }}>
-          <h3 style={{ marginBottom: 'var(--space-lg)', fontFamily: 'var(--font-display)' }}>Mis E-Books</h3>
-          {ebooksLoading ? (
-            <div className="page-loader" style={{ minHeight: '200px' }}><div className="spinner" /></div>
-          ) : ebooks.length === 0 ? (
-            <div className="empty-state" style={{ padding: 'var(--space-2xl)' }}>
-              <p className="empty-state-desc">Aún no tienes e-books. ¡Publica el primero!</p>
+        {/* Tables Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* My Ebooks */}
+          <section className="animate-slide-up" style={{ animationDelay: '0.5s' }}>
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="font-headline font-bold text-xl text-on-surface uppercase tracking-tight">Catálogo Propio</h3>
+              <span className="font-label text-[10px] text-on-surface-variant opacity-40 uppercase tracking-widest">{ebooks.length} Items</span>
             </div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Título</th>
-                    <th>Precio</th>
-                    <th>Comisión</th>
-                    <th>Categoría</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ebooks.map((eb) => (
-                    <tr key={eb.id}>
-                      <td style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{eb.title}</td>
-                      <td className="font-mono">{formatPrice(eb.price)}</td>
-                      <td>{eb.commission_percent}%</td>
-                      <td><span className="badge badge-neutral">{eb.category}</span></td>
-                      <td>
-                        <span className={`badge ${eb.is_active ? 'badge-success' : 'badge-error'}`}>
+            <div className="bg-white border border-[#f1f1ec] overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left font-label text-[10px] uppercase tracking-widest">
+                  <thead>
+                    <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
+                      <th className="px-6 py-4 font-bold">Título</th>
+                      <th className="px-6 py-4 font-bold">Precio</th>
+                      <th className="px-6 py-4 font-bold">Estado</th>
+                      <th className="px-6 py-4 font-bold text-right">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/5">
+                    {ebooksLoading ? (
+                      <tr><td colSpan={4} className="px-6 py-8 text-center">Cargando...</td></tr>
+                    ) : ebooks.length === 0 ? (
+                      <tr><td colSpan={4} className="px-6 py-8 text-center">Sin e-books publicados</td></tr>
+                    ) : ebooks.map((eb) => (
+                      <tr key={eb.id} className="hover:bg-surface-container-low transition-colors">
+                        <td className="px-6 py-4 text-on-surface font-bold">{eb.title}</td>
+                        <td className="px-6 py-4">{formatPrice(eb.price)}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-block w-2 h-2 rounded-full mr-2 ${eb.is_active ? 'bg-primary' : 'bg-error'}`}></span>
                           {eb.is_active ? 'Activo' : 'Inactivo'}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => toggleEbook(eb.id, eb.is_active)}
-                          aria-label={eb.is_active ? 'Desactivar' : 'Activar'}
-                        >
-                          {eb.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button
+                            onClick={() => toggleEbook(eb.id, eb.is_active)}
+                            className="text-on-surface hover:text-primary transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-lg">
+                              {eb.is_active ? 'visibility_off' : 'visibility'}
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
+          </section>
 
-        {/* Recent Sales */}
-        <div>
-          <h3 style={{ marginBottom: 'var(--space-lg)', fontFamily: 'var(--font-display)' }}>Ventas Recientes</h3>
-          {salesLoading ? (
-            <div className="page-loader" style={{ minHeight: '200px' }}><div className="spinner" /></div>
-          ) : sales.length === 0 ? (
-            <div className="empty-state" style={{ padding: 'var(--space-2xl)' }}>
-              <p className="empty-state-desc">Aún no tienes ventas.</p>
+          {/* Recent Sales */}
+          <section className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="font-headline font-bold text-xl text-on-surface uppercase tracking-tight">Registro de Ventas</h3>
+              <span className="font-label text-[10px] text-on-surface-variant opacity-40 uppercase tracking-widest">Historial</span>
             </div>
-          ) : (
-            <div className="table-wrapper">
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>E-Book</th>
-                    <th>Comprador</th>
-                    <th>Monto</th>
-                    <th>Tu ingreso</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sales.slice(0, 20).map((s) => (
-                    <tr key={s.id}>
-                      <td>{formatDate(s.created_at)}</td>
-                      <td style={{ color: 'var(--text-primary)' }}>{(s as any).ebook?.title || '—'}</td>
-                      <td>{s.buyer_name}</td>
-                      <td className="font-mono">{formatPrice(s.total_amount)}</td>
-                      <td className="font-mono" style={{ color: 'var(--success)' }}>{formatPrice(s.creator_amount)}</td>
-                      <td>
-                        <span className={`badge ${s.status === 'approved' ? 'badge-success' : s.status === 'pending' ? 'badge-warning' : 'badge-error'}`}>
-                          {s.status === 'approved' ? 'Aprobada' : s.status === 'pending' ? 'Pendiente' : s.status}
-                        </span>
-                      </td>
+            <div className="bg-white border border-[#f1f1ec] overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left font-label text-[10px] uppercase tracking-widest">
+                  <thead>
+                    <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
+                      <th className="px-6 py-4 font-bold">Fecha</th>
+                      <th className="px-6 py-4 font-bold">Item</th>
+                      <th className="px-6 py-4 font-bold">Neto</th>
+                      <th className="px-6 py-4 font-bold">Estado</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/5">
+                    {salesLoading ? (
+                      <tr><td colSpan={4} className="px-6 py-8 text-center">Cargando...</td></tr>
+                    ) : sales.length === 0 ? (
+                      <tr><td colSpan={4} className="px-6 py-8 text-center">Sin ventas registradas</td></tr>
+                    ) : sales.slice(0, 10).map((s) => (
+                      <tr key={s.id} className="hover:bg-surface-container-low transition-colors">
+                        <td className="px-6 py-4 opacity-60">{formatDate(s.created_at)}</td>
+                        <td className="px-6 py-4 text-on-surface font-bold text-ellipsis overflow-hidden">{(s as any).ebook?.title || '—'}</td>
+                        <td className="px-6 py-4 text-primary font-bold">{formatPrice(s.creator_amount)}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2 py-0.5 text-[8px] font-black border ${
+                            s.status === 'approved' ? 'border-primary text-primary' : 'border-tertiary text-tertiary'
+                          }`}>
+                            {s.status === 'approved' ? 'OK' : s.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
+          </section>
         </div>
       </div>
 
       {/* New Ebook Modal */}
       {showForm && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <div className="modal-content" style={{ maxWidth: '600px' }}>
-            <div className="modal-header">
-              <h3>Publicar nuevo E-Book</h3>
-              <button className="btn btn-icon btn-ghost" onClick={() => setShowForm(false)}><X size={20} /></button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-secondary-dim/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-2xl shadow-[0_80px_160px_-40px_rgba(45,47,44,0.3)] border border-[#f1f1ec] animate-scale-in">
+            <div className="p-8 md:p-12 border-b border-outline-variant/10 flex justify-between items-center">
+              <h3 className="font-headline font-bold text-2xl text-on-surface uppercase tracking-tight">Publicar Archivo</h3>
+              <button 
+                onClick={() => setShowForm(false)}
+                className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+              >
+                close
+              </button>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-                <div className="input-group">
-                  <label className="input-label" htmlFor="eb-title">Título *</label>
-                  <input id="eb-title" className="input-field" placeholder="Ej: Guía de Marketing Digital" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-                </div>
-
-                <div className="input-group">
-                  <label className="input-label" htmlFor="eb-desc">Descripción</label>
-                  <textarea id="eb-desc" className="input-field" placeholder="Describe de qué trata tu e-book..." value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
-                  <div className="input-group">
-                    <label className="input-label" htmlFor="eb-price">Precio (ARS) *</label>
-                    <input id="eb-price" type="number" className="input-field" placeholder="5000" min="1" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} required />
+            
+            <form onSubmit={handleSubmit} className="p-8 md:p-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-8">
+                  <div className="space-y-2">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-title">Título de la Obra</label>
+                    <input 
+                      id="eb-title" 
+                      className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
+                      placeholder="EJ: TEORÍA DEL DISEÑO" 
+                      value={formData.title} 
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
+                      required 
+                    />
                   </div>
-                  <div className="input-group">
-                    <label className="input-label" htmlFor="eb-commission">Comisión afiliado %</label>
-                    <input id="eb-commission" type="number" className="input-field" min="0" max="100" value={formData.commission_percent} onChange={(e) => setFormData({ ...formData, commission_percent: e.target.value })} />
+
+                  <div className="space-y-2">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-price">Precio Base (ARS)</label>
+                    <input 
+                      id="eb-price" 
+                      type="number"
+                      className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
+                      placeholder="0.00" 
+                      value={formData.price} 
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })} 
+                      required 
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-category">Categoría</label>
+                    <select 
+                      id="eb-category" 
+                      className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-colors"
+                      value={formData.category} 
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    >
+                      {CATEGORIES.filter(c => c.id !== 'all').map(c => (
+                        <option key={c.id} value={c.id}>{c.label}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
-                <div className="input-group">
-                  <label className="input-label" htmlFor="eb-category">Categoría</label>
-                  <select id="eb-category" className="input-field" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                    {CATEGORIES.filter(c => c.id !== 'all').map(c => (
-                      <option key={c.id} value={c.id}>{c.label}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Cover upload */}
-                <div className="input-group">
-                  <label className="input-label">Portada (imagen)</label>
-                  <div
-                    className="drop-zone"
-                    onClick={() => coverInputRef.current?.click()}
-                    style={{ padding: 'var(--space-lg)' }}
-                  >
-                    {coverFile ? (
-                      <p style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>📷 {coverFile.name}</p>
-                    ) : (
-                      <>
-                        <Upload size={24} style={{ color: 'var(--text-tertiary)', margin: '0 auto var(--space-sm)' }} />
-                        <p className="drop-zone-text">Click para subir portada</p>
-                        <p className="drop-zone-hint">JPG, PNG — Max 5MB</p>
-                      </>
-                    )}
+                <div className="space-y-8">
+                   <div className="space-y-2">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Portada (JPG/PNG)</label>
+                    <div 
+                      onClick={() => coverInputRef.current?.click()}
+                      className="border border-dashed border-outline-variant/30 h-32 flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-primary/40 mb-2">image</span>
+                      <span className="font-label text-[8px] uppercase tracking-widest">{coverFile ? coverFile.name : 'Subir Imagen'}</span>
+                    </div>
+                    <input ref={coverInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
                   </div>
-                  <input ref={coverInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
-                </div>
 
-                {/* Ebook file upload */}
-                <div className="input-group">
-                  <label className="input-label">Archivo del E-Book *</label>
-                  <div
-                    className="drop-zone"
-                    onClick={() => ebookInputRef.current?.click()}
-                    style={{ padding: 'var(--space-lg)' }}
-                  >
-                    {ebookFile ? (
-                      <p style={{ color: 'var(--text-primary)', fontSize: '0.85rem' }}>📄 {ebookFile.name}</p>
-                    ) : (
-                      <>
-                        <Upload size={24} style={{ color: 'var(--text-tertiary)', margin: '0 auto var(--space-sm)' }} />
-                        <p className="drop-zone-text">Click para subir e-book</p>
-                        <p className="drop-zone-hint">PDF, EPUB — Max 50MB</p>
-                      </>
-                    )}
+                  <div className="space-y-2">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Archivo Principal (PDF/EPUB)</label>
+                    <div 
+                      onClick={() => ebookInputRef.current?.click()}
+                      className="border border-dashed border-outline-variant/30 h-32 flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-primary/40 mb-2">upload_file</span>
+                      <span className="font-label text-[8px] uppercase tracking-widest">{ebookFile ? ebookFile.name : 'Subir Archivo'}</span>
+                    </div>
+                    <input ref={ebookInputRef} type="file" accept=".pdf,.epub" style={{ display: 'none' }} onChange={(e) => setEbookFile(e.target.files?.[0] || null)} />
                   </div>
-                  <input ref={ebookInputRef} type="file" accept=".pdf,.epub" style={{ display: 'none' }} onChange={(e) => setEbookFile(e.target.files?.[0] || null)} />
                 </div>
               </div>
 
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary" disabled={submitting}>
-                  {submitting ? <div className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }} /> : <>
-                    <Plus size={16} /> Publicar
-                  </>}
+              <div className="mt-12 flex justify-end gap-6">
+                <button 
+                  type="button" 
+                  onClick={() => setShowForm(false)}
+                  className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-on-surface transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={submitting}
+                  className="bg-primary px-8 py-4 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95"
+                >
+                  {submitting ? 'Publicando...' : 'Confirmar Publicación'}
                 </button>
               </div>
             </form>
