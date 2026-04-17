@@ -81,16 +81,33 @@ export function Navbar() {
 
               {user ? (
                 <>
+                  {profile?.role === 'admin' && (
+                    <Link 
+                      to="/admin"
+                      className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low text-error"
+                      title="Panel Administrativo"
+                    >
+                      <span className="material-symbols-outlined">shield_person</span>
+                    </Link>
+                  )}
                   <Link 
                     to={profile?.role === 'creator' ? '/dashboard/creator' : '/dashboard/affiliate'}
                     className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
+                    title="Panel de Control"
                   >
-                    <span className="material-symbols-outlined text-on-surface-variant">account_circle</span>
+                    <span className="material-symbols-outlined text-on-surface-variant">dashboard</span>
+                  </Link>
+                  <Link 
+                    to={profile?.role === 'creator' ? '/dashboard/creator/settings' : '/dashboard/affiliate/settings'}
+                    className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
+                    title="Configuración"
+                  >
+                    <span className="material-symbols-outlined text-on-surface-variant">settings</span>
                   </Link>
                   <button 
                     onClick={signOut}
                     className="active:scale-95 transition-transform hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-error-container hover:text-on-error-container"
-                    title="Cerrar Sessión"
+                    title="Cerrar Sesión"
                   >
                     <span className="material-symbols-outlined text-on-surface-variant group-hover:text-on-error-container">logout</span>
                   </button>
@@ -126,6 +143,12 @@ export function Navbar() {
           )}
           {profile && (
             <Link to="/dashboard/affiliate" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Socios</Link>
+          )}
+          {profile && (
+            <Link to={profile.role === 'creator' ? '/dashboard/creator/settings' : '/dashboard/affiliate/settings'} onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Configuración</Link>
+          )}
+          {profile?.role === 'admin' && (
+            <Link to="/admin" onClick={() => setMobileOpen(false)} className="text-error hover:text-primary">Panel Admin</Link>
           )}
           {!user && (
             <Link to="/login" onClick={() => setMobileOpen(false)} className="text-primary">Iniciar Sesión</Link>

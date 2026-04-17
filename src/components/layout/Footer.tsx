@@ -11,10 +11,10 @@ export function Footer() {
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-6 md:gap-8 items-center font-medium">
-          <Link to="/" className="text-on-surface-variant hover:text-secondary transition-colors">Privacidad</Link>
-          <Link to="/" className="text-on-surface-variant hover:text-secondary transition-colors">Términos de Uso</Link>
-          <a href="mailto:soporte@koda.com" className="text-on-surface-variant hover:text-secondary transition-colors">Contacto</a>
-          <Link to="/" className="text-on-surface-variant hover:text-secondary transition-colors">Ayuda</Link>
+          <Link to="/privacidad" className="text-on-surface-variant hover:text-secondary transition-colors">Privacidad</Link>
+          <Link to="/terminos" className="text-on-surface-variant hover:text-secondary transition-colors">Términos de Uso</Link>
+          <Link to="/contacto" className="text-on-surface-variant hover:text-secondary transition-colors">Contacto</Link>
+          <Link to="/contacto" className="text-on-surface-variant hover:text-secondary transition-colors">Ayuda</Link>
         </div>
         <div className="flex gap-4">
           <button className="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant hover:text-primary transition-all shadow-sm">
