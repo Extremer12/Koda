@@ -36,7 +36,12 @@ export function StorePage() {
               }`}
             >
               <span className="material-symbols-outlined" style={{ fontVariationSettings: category === cat.id ? "'FILL' 1" : "'FILL' 0" }}>
-                {cat.id === 'all' ? 'widgets' : cat.id === 'fiction' ? 'menu_book' : cat.id === 'non-fiction' ? 'auto_stories' : cat.id === 'tech' ? 'memory' : 'palette'}
+                {cat.id === 'all' ? 'widgets' : 
+                 cat.id === 'programacion' ? 'memory' : 
+                 cat.id === 'diseno' ? 'palette' : 
+                 cat.id === 'negocios' ? 'business_center' : 
+                 cat.id === 'marketing' ? 'campaign' : 
+                 'menu_book'}
               </span>
               <span>{cat.label === 'Todos' ? 'Todas' : cat.label}</span>
             </button>

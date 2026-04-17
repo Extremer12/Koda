@@ -56,7 +56,7 @@ export function EbookCard({ ebook, refCode }: EbookCardProps) {
         <span className="font-black text-primary text-sm md:text-base">{formatPrice(ebook.price)}</span>
         <button 
           className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-surface text-primary hover:bg-primary hover:text-white transition-colors active:scale-95"
-          onClick={(e) => {
+          onClick={() => {
             // Prevent navigating to the link when clicking the "add to cart" area
             // Currently it will act as navigating anyway unless we stop propagation, but since there's no actual cart, let it navigate.
             // e.preventDefault();
