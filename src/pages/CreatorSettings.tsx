@@ -1,9 +1,33 @@
 import { useAuth } from '../context/AuthContext';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 export function CreatorSettings() {
   const { user, profile, loading: authLoading } = useAuth();
+  const location = useLocation();
+
+  const [formData, setFormData] = useState({
+    fullName: profile?.full_name || '',
+    email: profile?.email || '',
+  });
+
+  useEffect(() => {
+    // Revisar si venimos de un redirect de Mercado Pago
+    const params = new URLSearchParams(location.search);
+    if (params.get('mp_success') === 'true') {
+      toast.success('¡Cuenta de Mercado Pago vinculada exitosamente!');
+      // Limpiar URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get('mp_error') === 'true') {
+      toast.error('Error al vincular Mercado Pago. Intenta nuevamente.');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [location]);
+
+  const mpClientId = import.meta.env.VITE_MP_CLIENT_ID || 'APP_USR-ACA_VA_TU_CLIENT_ID';
+  const mpRedirectUri = import.meta.env.VITE_MP_REDIRECT_URI || 'https://izbjowtoxuilkjrgguxw.supabase.co/functions/v1/mp-oauth';
+  const mpOAuthUrl = `https://auth.mercadopago.com/authorization?client_id=${mpClientId}&response_type=code&platform_id=mp&state=${profile?.id}|creator&redirect_uri=${mpRedirectUri}`;
 
   if (authLoading) {
     return (
@@ -14,8 +38,6 @@ export function CreatorSettings() {
   }
 
   if (!user || profile?.role !== 'creator') return <Navigate to="/login" replace />;
-
-  const isConnected = !!profile.mercadopago_access_token;
 
   return (
     <main className="bg-surface min-h-screen pt-24 md:pt-32 pb-24 px-6 md:px-12">
@@ -36,7 +58,7 @@ export function CreatorSettings() {
         {/* Mercado Pago Integration */}
         <section className="bg-white p-8 md:p-12 border border-[#f1f1ec] shadow-[0_40px_80px_-20px_rgba(45,47,44,0.1)] mb-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <div className="flex items-start gap-6 mb-8">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isConnected ? 'bg-[#009EE3]/10 text-[#009EE3]' : 'bg-surface-container-low text-on-surface-variant'}`}>
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${profile?.mercadopago_access_token ? 'bg-[#009EE3]/10 text-[#009EE3]' : 'bg-surface-container-low text-on-surface-variant'}`}>
               <span className="material-symbols-outlined">payments</span>
             </div>
             <div>
@@ -48,30 +70,38 @@ export function CreatorSettings() {
           </div>
 
           <div className="pt-8 border-t border-outline-variant/10">
-            {isConnected ? (
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 border border-[#009EE3]/20 bg-[#009EE3]/5">
+            {profile?.mercadopago_access_token ? (
+              <div className="bg-[#009EE3]/10 border border-[#009EE3]/30 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <span className="material-symbols-outlined text-[#009EE3]">check_circle</span>
+                  <div className="w-12 h-12 bg-[#009EE3] rounded-full flex items-center justify-center text-white">
+                    <span className="material-symbols-outlined">check_circle</span>
+                  </div>
                   <div>
-                    <span className="block font-headline font-bold text-sm text-on-surface">Cuenta Vinculada</span>
-                    <span className="block font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">ID: {profile.mercadopago_user_id}</span>
+                    <span className="block font-headline font-bold text-lg text-on-surface">Cuenta Vinculada</span>
+                    <span className="block font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">
+                      ID: {profile.mercadopago_user_id || 'Activa'}
+                    </span>
                   </div>
                 </div>
-                <button 
-                  onClick={() => toast.error('Desvincular no implementado aún')}
-                  className="font-label text-[10px] uppercase tracking-[0.2em] font-bold text-error hover:opacity-80 transition-opacity"
-                >
-                  Desvincular
-                </button>
+                <a href="https://www.mercadopago.com" target="_blank" rel="noreferrer" className="text-[#009EE3] text-sm font-bold hover:underline">
+                  Ir a Mercado Pago
+                </a>
               </div>
             ) : (
-              <button 
-                onClick={() => toast.success('Redirigiendo a Mercado Pago... (Placeholder)')}
-                className="w-full md:w-auto bg-[#009EE3] py-4 px-8 text-white font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95 flex items-center justify-center gap-3"
-              >
-                <span className="material-symbols-outlined text-sm">link</span>
-                Conectar Mercado Pago
-              </button>
+              <div className="bg-surface-container-low p-6 flex flex-col sm:flex-row items-center justify-between gap-6 border border-outline-variant/10">
+                <div>
+                  <span className="block font-headline font-bold text-lg text-on-surface mb-1">Vincular cuenta</span>
+                  <span className="block text-sm text-on-surface-variant opacity-80 max-w-sm">
+                    Conecta tu cuenta para recibir el dinero de tus ventas automáticamente sin retenciones.
+                  </span>
+                </div>
+                <a 
+                  href={mpOAuthUrl}
+                  className="whitespace-nowrap bg-[#009EE3] text-white font-label text-[10px] font-bold uppercase tracking-[0.2em] px-8 py-4 transition-all hover:brightness-110 active:scale-95"
+                >
+                  Conectar Mercado Pago
+                </a>
+              </div>
             )}
           </div>
         </section>
@@ -86,7 +116,8 @@ export function CreatorSettings() {
               <input 
                 type="text" 
                 className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
-                defaultValue={profile.full_name || ''}
+                defaultValue={formData.fullName}
+                onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               />
             </div>
 

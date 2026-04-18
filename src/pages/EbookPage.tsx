@@ -51,24 +51,28 @@ export function EbookPage() {
 
     setSubmitting(true);
     try {
-      const response = await supabase.functions.invoke('create-preference', {
+      const { data, error: functionError } = await supabase.functions.invoke('checkout', {
         body: {
-          ebook_id: ebook.id,
-          buyer_name: buyerName.trim(),
-          buyer_email: buyerEmail.trim(),
-          ref_code: refCode,
+          ebookId: ebook.id,
+          buyerName: buyerName.trim(),
+          buyerEmail: buyerEmail.trim(),
+          refCode: refCode,
         },
       });
 
-      if (response.error) {
-        throw new Error(response.error.message || 'Error al crear el pago');
+      if (functionError) {
+        throw new Error(functionError.message || 'Error al procesar el pago');
       }
 
-      const { init_point } = response.data;
-      if (init_point) {
-        window.location.href = init_point;
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      const { checkoutUrl } = data;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
       } else {
-        toast.success('Pago creado. Redirigiendo...');
+        toast.error('No se pudo obtener la URL de pago');
       }
     } catch (err) {
       toast.error(
