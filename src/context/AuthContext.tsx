@@ -9,7 +9,8 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInWithEmail: (email: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
+  signUpWithPassword: (email: string, password: string, role: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
 }
@@ -76,14 +77,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }
 
-  async function signInWithEmail(email: string) {
-    const { error } = await supabase.auth.signInWithOtp({
+  async function signInWithPassword(email: string, password: string) {
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      password,
     });
     if (error) throw error;
+  }
+
+  async function signUpWithPassword(email: string, password: string, role: string, fullName: string) {
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        }
+      }
+    });
+    
+    if (signUpError) throw signUpError;
+    
+    // El trigger de Supabase podría crear el perfil, pero por seguridad, 
+    // nos aseguramos de que el rol se asigne o lo dejamos preparado para el trigger.
+    // Asumiendo que el trigger crea el perfil por defecto como affiliate o creator basado en auth.users.raw_user_meta_data.role
+    // En este caso, si el trigger no asigna el rol automáticamente, lo actualizamos nosotros cuando se loguea,
+    // pero es mejor pasar el rol en data si hay un trigger.
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('profiles').update({ role, full_name: fullName }).eq('id', user.id);
+    }
   }
 
   async function signOut() {
@@ -106,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, profile, loading, signInWithGoogle, signInWithEmail, signOut, updateProfile }}
+      value={{ user, session, profile, loading, signInWithGoogle, signInWithPassword, signUpWithPassword, signOut, updateProfile }}
     >
       {children}
     </AuthContext.Provider>

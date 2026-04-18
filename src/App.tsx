@@ -12,6 +12,7 @@ import { CreatorDashboard } from './pages/CreatorDashboard';
 import { CreatorSettings } from './pages/CreatorSettings';
 import { AffiliateDashboard } from './pages/AffiliateDashboard';
 import { AffiliateSettings } from './pages/AffiliateSettings';
+import { SellersLandingPage } from './pages/SellersLandingPage';
 import { DownloadPage } from './pages/DownloadPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { TermsPage } from './pages/TermsPage';
@@ -26,6 +27,7 @@ export default function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<StorePage />} />
+          <Route path="/vender" element={<SellersLandingPage />} />
           <Route path="/ebook/:id" element={<EbookPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/callback" element={<CallbackPage />} />

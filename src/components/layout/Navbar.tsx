@@ -30,7 +30,18 @@ export function Navbar() {
                   : 'text-on-surface-variant font-medium hover:text-primary'
               } transition-all duration-300`}
             >
-              Explorar
+              Tienda
+            </Link>
+            
+            <Link
+              to="/vender"
+              className={`${
+                location.pathname === '/vender' 
+                  ? 'text-primary font-bold border-b-2 border-primary pb-1' 
+                  : 'text-on-surface-variant font-medium hover:text-primary'
+              } transition-all duration-300`}
+            >
+              Vender en KODA
             </Link>
             
             {profile?.role === 'creator' && (
@@ -113,11 +124,16 @@ export function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link to="/login">
-                  <button className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full bg-surface-container-low hover:bg-primary hover:text-white text-primary">
-                    <span className="material-symbols-outlined">login</span>
-                  </button>
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link to="/login" className="hidden sm:block font-label text-[10px] uppercase tracking-widest font-bold text-on-surface hover:text-primary transition-colors">
+                    Iniciar Sesión
+                  </Link>
+                  <Link to="/login">
+                    <button className="bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest font-bold px-6 py-3 hover:brightness-110 active:scale-95 transition-all">
+                      Empezar
+                    </button>
+                  </Link>
+                </div>
               )}
             </div>
 
@@ -137,7 +153,8 @@ export function Navbar() {
       {/* Mobile Menu Dropdown */}
       {mobileOpen && (
         <div className="md:hidden fixed top-[72px] lg:top-[88px] left-0 w-full bg-white/95 backdrop-blur-xl border-b border-outline-variant/10 px-6 py-8 flex flex-col gap-6 font-label font-bold text-sm animate-slide-down z-40 shadow-xl">
-          <Link to="/" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Explorar</Link>
+          <Link to="/" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Tienda</Link>
+          <Link to="/vender" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Vender en KODA</Link>
           {profile?.role === 'creator' && (
             <Link to="/dashboard/creator" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Ediciones</Link>
           )}
