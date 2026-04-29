@@ -1,0 +1,17 @@
+{
+  "name": "KODA",
+  "short_name": "KODA",
+  "description": "El ecosistema editorial más elegante para vender e-books.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f6f7",
+  "theme_color": "#7d10e7",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
