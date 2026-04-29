@@ -456,7 +456,7 @@ export function CreatorDashboard() {
                     />
                     <p className="text-[8px] uppercase tracking-widest text-on-surface-variant opacity-40">Recomendamos entre 30% y 50% para atraer socios.</p>
                   </div>
-                </div>              </div>
+                </div>
 
                 <div className="space-y-8">
                    <div className="space-y-2">

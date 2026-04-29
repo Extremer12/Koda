@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useState } from 'react';
+
 
 export function Navbar() {
   const { user, profile, signOut } = useAuth();
@@ -116,7 +116,7 @@ export function Navbar() {
                 </div>
               )}
             </div>
-
+          </div>
         </div>
       </nav>
     </>
