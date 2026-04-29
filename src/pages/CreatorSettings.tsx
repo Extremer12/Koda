@@ -10,7 +10,10 @@ export function CreatorSettings() {
   const [formData, setFormData] = useState({
     fullName: profile?.full_name || '',
     email: profile?.email || '',
+    bio: profile?.bio || '',
+    storeName: profile?.store_name || '',
   });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     // Revisar si venimos de un redirect de Mercado Pago
@@ -112,12 +115,35 @@ export function CreatorSettings() {
           
           <form className="space-y-8" onSubmit={e => e.preventDefault()}>
             <div className="space-y-2">
-              <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Nombre de Creador / Marca</label>
+              <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Nombre Real / Representante</label>
               <input 
                 type="text" 
-                className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
-                defaultValue={formData.fullName}
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20" 
+                placeholder="EJ: JUAN PÉREZ"
+                value={formData.fullName}
                 onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Nombre de tu Tienda o Marca</label>
+              <input 
+                type="text" 
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20" 
+                placeholder="EJ: MI BIBLIOTECA DIGITAL"
+                value={formData.storeName}
+                onChange={(e) => setFormData({...formData, storeName: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Biografía / Descripción</label>
+              <textarea 
+                rows={4}
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20 resize-none" 
+                placeholder="CUÉNTALE A TUS LECTORES QUIÉN ERES..."
+                value={formData.bio}
+                onChange={(e) => setFormData({...formData, bio: e.target.value})}
               />
             </div>
 
@@ -125,7 +151,7 @@ export function CreatorSettings() {
               <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Email de Contacto</label>
               <input 
                 type="email" 
-                className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors opacity-50 cursor-not-allowed" 
+                className="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors opacity-50 cursor-not-allowed" 
                 value={profile.email}
                 disabled
               />
@@ -134,10 +160,25 @@ export function CreatorSettings() {
 
             <button 
               type="submit" 
-              onClick={() => toast.success('Perfil actualizado (Placeholder)')}
-              className="bg-primary py-4 px-8 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95"
+              disabled={saving}
+              onClick={async () => {
+                setSaving(true);
+                try {
+                  await updateProfile({ 
+                    full_name: formData.fullName, 
+                    bio: formData.bio, 
+                    store_name: formData.storeName 
+                  });
+                  toast.success('Perfil actualizado correctamente');
+                } catch {
+                  toast.error('Error al guardar los cambios');
+                } finally {
+                  setSaving(false);
+                }
+              }}
+              className="bg-primary py-4 px-12 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50"
             >
-              Guardar Cambios
+              {saving ? 'Guardando...' : 'Guardar Perfil'}
             </button>
           </form>
         </section>

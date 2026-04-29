@@ -107,7 +107,9 @@ export function EbookPage() {
     );
   }
 
-  const creatorName = (ebook as any).creator?.full_name || 'Autor';
+  const creator = (ebook as any).creator;
+  const creatorName = creator?.store_name || creator?.full_name || 'Autor';
+  const creatorBio = creator?.bio;
 
   return (
     <main className="bg-surface min-h-screen pt-24 md:pt-32 pb-24 px-6 md:px-12">
@@ -152,6 +154,15 @@ export function EbookPage() {
               <div className="prose prose-sm md:prose-base max-w-none">
                 <p className="font-body text-on-surface-variant leading-relaxed whitespace-pre-wrap">
                   {ebook.description}
+                </p>
+              </div>
+            )}
+
+            {creatorBio && (
+              <div className="mt-16 p-8 bg-surface-container-low border border-outline-variant/5">
+                <span className="font-label text-[10px] uppercase tracking-[0.3em] text-primary font-black mb-4 block">Sobre el Creador</span>
+                <p className="font-body text-xs text-on-surface-variant leading-relaxed opacity-80 italic">
+                  "{creatorBio}"
                 </p>
               </div>
             )}

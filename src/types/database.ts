@@ -7,6 +7,8 @@ export interface Profile {
   mercadopago_access_token: string | null;
   mercadopago_refresh_token: string | null;
   mercadopago_user_id: string | null;
+  bio: string | null;
+  store_name: string | null;
   created_at: string;
   updated_at: string;
 }

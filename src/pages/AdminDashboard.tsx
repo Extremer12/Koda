@@ -135,6 +135,7 @@ export function AdminDashboard() {
                       <thead>
                         <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
                           <th className="px-6 py-4 font-bold">Email</th>
+                          <th className="px-6 py-4 font-bold">Tienda</th>
                           <th className="px-6 py-4 font-bold">Rol</th>
                         </tr>
                       </thead>
@@ -142,6 +143,7 @@ export function AdminDashboard() {
                         {users.map((u) => (
                           <tr key={u.id} className="hover:bg-surface-container-low transition-colors">
                             <td className="px-6 py-4">{u.email}</td>
+                            <td className="px-6 py-4 opacity-60 italic">{u.store_name || '—'}</td>
                             <td className="px-6 py-4">
                               <span className="px-2 py-0.5 text-[8px] font-black border border-outline-variant/30 text-on-surface-variant">
                                 {u.role}

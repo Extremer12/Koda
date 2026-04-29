@@ -12,7 +12,7 @@ export function useEbooks(category?: string) {
       setLoading(true);
       let query = supabase
         .from('ebooks')
-        .select('*, creator:profiles!ebooks_creator_id_fkey(id, full_name, avatar_url)')
+        .select('*, creator:profiles!ebooks_creator_id_fkey(id, full_name, avatar_url, store_name, bio)')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -50,7 +50,7 @@ export function useEbook(id: string | undefined) {
         setLoading(true);
         const { data, error } = await supabase
           .from('ebooks')
-          .select('*, creator:profiles!ebooks_creator_id_fkey(id, full_name, avatar_url)')
+          .select('*, creator:profiles!ebooks_creator_id_fkey(id, full_name, avatar_url, store_name, bio)')
           .eq('id', id)
           .single();
 

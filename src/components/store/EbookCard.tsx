@@ -23,7 +23,7 @@ const categoryLabels: Record<string, string> = {
 
 export function EbookCard({ ebook, refCode }: EbookCardProps) {
   const link = refCode ? `/ebook/${ebook.id}?ref=${refCode}` : `/ebook/${ebook.id}`;
-  const creatorName = (ebook as any).creator?.full_name || 'Autor Desconocido';
+  const creatorName = (ebook as any).creator?.store_name || (ebook as any).creator?.full_name || 'Autor Desconocido';
   
   // Decide badge styling based on category or price as a mock feature
   const isTop = ebook.price > 15;
