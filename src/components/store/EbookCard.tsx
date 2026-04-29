@@ -34,7 +34,7 @@ export function EbookCard({ ebook, refCode }: EbookCardProps) {
     <Link to={link} className="group bg-white rounded-xl p-4 transition-all duration-300 hover:-translate-y-1 block h-full flex flex-col border border-outline-variant/10 shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.05)]">
       <div className="aspect-[2/3] rounded-lg overflow-hidden mb-4 relative bg-surface-container-low">
         <img 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
           src={ebook.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80'} 
           alt={ebook.title} 
         />

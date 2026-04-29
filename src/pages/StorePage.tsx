@@ -100,15 +100,27 @@ export function StorePage() {
           </div>
         </header>
 
-        {/* Categories Mobile Toggle (Fixed Bottom Button) */}
-        <div className="lg:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[40] animate-bounce-subtle">
-           <button 
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="bg-on-surface text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-3 active:scale-95 transition-all border border-white/10"
-           >
-             <span className="material-symbols-outlined text-sm">widgets</span>
-             {currentCategoryLabel}
-           </button>
+        {/* Categories Mobile Horizontal Scroll */}
+        <div className="lg:hidden mb-8 -mx-4 px-4 overflow-x-auto no-scrollbar flex gap-2 pb-2">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setCategory(cat.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`flex-shrink-0 flex items-center gap-2 px-6 py-3 rounded-full transition-all border ${
+                category === cat.id
+                  ? 'bg-primary border-primary text-white font-bold shadow-lg shadow-primary/20'
+                  : 'bg-white border-outline-variant/10 text-on-surface-variant font-medium'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-sm ${category === cat.id ? 'fill-1' : ''}`}>
+                {getCategoryIcon(cat.id)}
+              </span>
+              <span className="text-[10px] uppercase tracking-widest">{cat.label === 'Todos' ? 'Todas' : cat.label}</span>
+            </button>
+          ))}
         </div>
 
         {/* Product Grid */}
@@ -134,8 +146,18 @@ export function StorePage() {
         </div>
 
         {loading ? (
-           <div className="flex justify-center py-32">
-             <div className="h-16 w-16 border-[6px] border-primary/20 border-t-primary rounded-full animate-spin"></div>
+           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 md:gap-8">
+             {[...Array(10)].map((_, i) => (
+               <div key={i} className="animate-pulse bg-white rounded-xl p-4 border border-outline-variant/10">
+                 <div className="aspect-[2/3] bg-surface-container-low rounded-lg mb-4"></div>
+                 <div className="h-4 bg-surface-container-low rounded w-3/4 mb-2"></div>
+                 <div className="h-3 bg-surface-container-low rounded w-1/2 mb-4"></div>
+                 <div className="flex justify-between items-center">
+                   <div className="h-5 bg-surface-container-low rounded w-1/4"></div>
+                   <div className="h-8 w-8 bg-surface-container-low rounded-full"></div>
+                 </div>
+               </div>
+             ))}
            </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 md:gap-8">

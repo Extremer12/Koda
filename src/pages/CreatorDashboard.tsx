@@ -243,7 +243,8 @@ export function CreatorDashboard() {
               <span className="font-label text-[10px] text-on-surface-variant opacity-40 uppercase tracking-widest">{ebooks.length} Items</span>
             </div>
             <div className="bg-white border border-[#f1f1ec] overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left font-label text-[10px] uppercase tracking-widest">
                   <thead>
                     <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
@@ -281,6 +282,35 @@ export function CreatorDashboard() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden divide-y divide-outline-variant/5">
+                {ebooksLoading ? (
+                   <div className="px-6 py-12 text-center text-[10px] uppercase tracking-widest opacity-40 italic">Cargando...</div>
+                ) : ebooks.length === 0 ? (
+                  <div className="px-6 py-12 text-center text-[10px] uppercase tracking-widest opacity-40 italic">Sin e-books publicados</div>
+                ) : ebooks.map((eb) => (
+                  <div key={eb.id} className="p-6 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <span className="font-headline font-bold text-sm text-on-surface">{eb.title}</span>
+                      <button
+                        onClick={() => toggleEbook(eb.id, eb.is_active)}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${eb.is_active ? 'bg-primary/10 text-primary' : 'bg-error/10 text-error'}`}
+                      >
+                        <span className="material-symbols-outlined text-sm">
+                          {eb.is_active ? 'visibility_off' : 'visibility'}
+                        </span>
+                      </button>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-headline font-black text-lg text-primary">{formatPrice(eb.price)}</span>
+                      <span className={`px-2 py-0.5 text-[8px] font-black border ${eb.is_active ? 'border-primary text-primary' : 'border-error text-error'}`}>
+                        {eb.is_active ? 'ACTIVO' : 'INACTIVO'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
@@ -291,7 +321,8 @@ export function CreatorDashboard() {
               <span className="font-label text-[10px] text-on-surface-variant opacity-40 uppercase tracking-widest">Historial</span>
             </div>
             <div className="bg-white border border-[#f1f1ec] overflow-hidden">
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left font-label text-[10px] uppercase tracking-widest">
                   <thead>
                     <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
@@ -323,6 +354,33 @@ export function CreatorDashboard() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden divide-y divide-outline-variant/5">
+                {salesLoading ? (
+                  <div className="px-6 py-12 text-center text-[10px] uppercase tracking-widest opacity-40 italic">Cargando...</div>
+                ) : sales.length === 0 ? (
+                  <div className="px-6 py-12 text-center text-[10px] uppercase tracking-widest opacity-40 italic">Sin ventas registradas</div>
+                ) : sales.slice(0, 10).map((s) => (
+                  <div key={s.id} className="p-6 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="block font-headline font-bold text-sm text-on-surface">{(s as any).ebook?.title || '—'}</span>
+                        <span className="block font-label text-[8px] uppercase tracking-widest text-on-surface-variant opacity-40 mt-1">{formatDate(s.created_at)}</span>
+                      </div>
+                      <span className={`px-2 py-0.5 text-[8px] font-black border ${
+                        s.status === 'approved' ? 'border-primary text-primary' : 'border-tertiary text-tertiary'
+                      }`}>
+                        {s.status === 'approved' ? 'OK' : s.status}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40">Neto</span>
+                      <span className="font-headline font-black text-lg text-primary">{formatPrice(s.creator_amount)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         </div>
@@ -344,12 +402,12 @@ export function CreatorDashboard() {
             
             <form onSubmit={handleSubmit} className="p-8 md:p-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <div className="space-y-2">
                     <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-title">Título de la Obra</label>
                     <input 
                       id="eb-title" 
-                      className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
+                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
                       placeholder="EJ: TEORÍA DEL DISEÑO" 
                       value={formData.title} 
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
@@ -362,7 +420,7 @@ export function CreatorDashboard() {
                     <input 
                       id="eb-price" 
                       type="number"
-                      className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
+                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
                       placeholder="0.00" 
                       value={formData.price} 
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })} 
@@ -374,7 +432,7 @@ export function CreatorDashboard() {
                     <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-category">Categoría</label>
                     <select 
                       id="eb-category" 
-                      className="w-full bg-transparent border-b border-outline-variant/30 py-3 font-label text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-colors"
+                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 font-label text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-colors"
                       value={formData.category} 
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     >
@@ -383,7 +441,22 @@ export function CreatorDashboard() {
                       ))}
                     </select>
                   </div>
-                </div>
+
+                  <div className="space-y-2">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-primary" htmlFor="eb-comm">Comisión Afiliados (%)</label>
+                    <input 
+                      id="eb-comm" 
+                      type="number"
+                      max="90"
+                      min="5"
+                      className="w-full bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors text-primary font-bold" 
+                      value={formData.commission_percent} 
+                      onChange={(e) => setFormData({ ...formData, commission_percent: e.target.value })} 
+                      required 
+                    />
+                    <p className="text-[8px] uppercase tracking-widest text-on-surface-variant opacity-40">Recomendamos entre 30% y 50% para atraer socios.</p>
+                  </div>
+                </div>              </div>
 
                 <div className="space-y-8">
                    <div className="space-y-2">

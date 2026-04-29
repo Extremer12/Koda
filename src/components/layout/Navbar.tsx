@@ -5,7 +5,6 @@ import { useState } from 'react';
 export function Navbar() {
   const { user, profile, signOut } = useAuth();
   const location = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <>
@@ -15,7 +14,6 @@ export function Navbar() {
           <Link 
             to="/" 
             className="text-3xl font-black tracking-tighter text-primary hover:opacity-80 transition-opacity"
-            onClick={() => setMobileOpen(false)}
           >
             KODA
           </Link>
@@ -99,7 +97,7 @@ export function Navbar() {
                   </Link>
                   <button 
                     onClick={signOut}
-                    className="active:scale-95 transition-transform hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-error-container hover:text-on-error-container"
+                    className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-error-container hover:text-on-error-container"
                     title="Cerrar Sesión"
                   >
                     <span className="material-symbols-outlined text-on-surface-variant group-hover:text-on-error-container">logout</span>
@@ -119,44 +117,8 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <button 
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
-              onClick={() => setMobileOpen(!mobileOpen)}
-            >
-              <span className="material-symbols-outlined text-2xl text-on-surface">
-                {mobileOpen ? 'close' : 'menu'}
-              </span>
-            </button>
-          </div>
         </div>
       </nav>
-
-      {/* Mobile Menu Dropdown */}
-      {mobileOpen && (
-        <div className="md:hidden fixed top-[72px] lg:top-[88px] left-0 w-full bg-white/95 backdrop-blur-xl border-b border-outline-variant/10 px-6 py-8 flex flex-col gap-6 font-label font-bold text-sm animate-slide-down z-40 shadow-xl">
-          <Link to="/" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Tienda</Link>
-          <Link to="/vender" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Vender en KODA</Link>
-          {profile?.role === 'creator' && (
-            <Link to="/dashboard/creator" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Ediciones</Link>
-          )}
-          {profile && (
-            <Link to="/dashboard/affiliate" onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Socios</Link>
-          )}
-          {profile && (
-            <Link to={profile.role === 'creator' ? '/dashboard/creator/settings' : '/dashboard/affiliate/settings'} onClick={() => setMobileOpen(false)} className="text-on-surface hover:text-primary">Configuración</Link>
-          )}
-          {profile?.role === 'admin' && (
-            <Link to="/admin" onClick={() => setMobileOpen(false)} className="text-error hover:text-primary">Panel Admin</Link>
-          )}
-          {!user && (
-            <Link to="/login" onClick={() => setMobileOpen(false)} className="text-primary">Iniciar Sesión</Link>
-          )}
-          {user && (
-            <button onClick={() => { signOut(); setMobileOpen(false); }} className="text-left text-error">Cerrar Sesión</button>
-          )}
-        </div>
-      )}
     </>
   );
 }

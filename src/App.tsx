@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
-import { SupportButton } from './components/layout/SupportButton';
+import { MobileBottomNav } from './components/layout/MobileBottomNav';
 
 // Eagerly loaded (Main entry point)
 import { StorePage } from './pages/StorePage';
@@ -58,19 +58,30 @@ export default function App() {
           </Routes>
         </Suspense>
         <Footer />
-        <SupportButton />
+        <MobileBottomNav />
         <Toaster
           position="bottom-right"
           toastOptions={{
+            duration: 4000,
             style: {
-              background: '#2d2f2c',
-              color: '#f7f7f2',
-              border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: '0',
-              fontSize: '0.8rem',
-              fontFamily: 'Inter, sans-serif',
+              background: 'rgba(45, 47, 44, 0.95)',
+              backdropFilter: 'blur(10px)',
+              color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '1rem',
+              fontSize: '0.75rem',
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
+              fontWeight: '700',
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
+              padding: '1rem 1.5rem',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+            },
+            success: {
+              iconTheme: {
+                primary: '#7d10e7',
+                secondary: '#ffffff',
+              },
             },
           }}
         />

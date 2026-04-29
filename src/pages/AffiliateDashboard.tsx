@@ -119,7 +119,8 @@ export function AffiliateDashboard() {
             <span className="font-label text-[10px] text-on-surface-variant opacity-40 uppercase tracking-widest">{affiliations.length} Activos</span>
           </div>
           <div className="bg-white border border-[#f1f1ec] overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left font-label text-[10px] uppercase tracking-widest">
                 <thead>
                   <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
@@ -150,6 +151,33 @@ export function AffiliateDashboard() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden divide-y divide-outline-variant/5">
+              {affiliations.length === 0 ? (
+                <div className="px-6 py-12 text-center opacity-40 italic text-[10px] uppercase tracking-widest">Aún no hay enlaces.</div>
+              ) : affiliations.map((aff) => (
+                <div key={aff.id} className="p-6 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <span className="font-headline font-bold text-sm text-on-surface">{(aff as any).ebook?.title || '—'}</span>
+                    <span className="font-label text-[10px] font-bold text-primary">{(aff as any).ebook?.commission_percent || 0}%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-on-surface-variant opacity-40">
+                      <span className="material-symbols-outlined text-sm">ads_click</span>
+                      <span className="font-label text-[10px] uppercase tracking-widest">{aff.clicks} Impactos</span>
+                    </div>
+                    <button
+                      onClick={() => copyLink(aff.ref_code, aff.id)}
+                      className="bg-primary/10 text-primary px-4 py-2 rounded-full font-bold font-label text-[10px] uppercase tracking-widest flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined text-sm">{copiedId === aff.id ? 'check_circle' : 'content_copy'}</span>
+                      {copiedId === aff.id ? 'Copiado' : 'Copiar'}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -209,7 +237,8 @@ export function AffiliateDashboard() {
         <section className="animate-slide-up" style={{ animationDelay: '0.6s' }}>
           <h3 className="font-headline font-bold text-xl text-on-surface uppercase tracking-tight mb-8">Registro de Comisiones</h3>
           <div className="bg-white border border-[#f1f1ec] overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left font-label text-[10px] uppercase tracking-widest">
                 <thead>
                   <tr className="border-b border-outline-variant/10 text-on-surface-variant opacity-40">
@@ -240,6 +269,31 @@ export function AffiliateDashboard() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden divide-y divide-outline-variant/5">
+              {sales.length === 0 ? (
+                <div className="px-6 py-12 text-center opacity-40 italic text-[10px] uppercase tracking-widest">Sin ventas registradas.</div>
+              ) : sales.map((s) => (
+                <div key={s.id} className="p-6 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="block font-headline font-bold text-sm text-on-surface">{(s as any).ebook?.title || '—'}</span>
+                      <span className="block font-label text-[8px] uppercase tracking-widest text-on-surface-variant opacity-40 mt-1">{formatDate(s.created_at)}</span>
+                    </div>
+                    <span className={`px-2 py-0.5 text-[8px] font-black border ${
+                      s.status === 'approved' ? 'border-primary text-primary' : 'border-tertiary text-tertiary'
+                    }`}>
+                      {s.status === 'approved' ? 'OK' : s.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40">Retorno</span>
+                    <span className="font-headline font-black text-lg text-primary">{formatPrice(s.affiliate_amount)}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
