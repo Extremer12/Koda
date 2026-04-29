@@ -70,22 +70,7 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-4 lg:gap-6">
-            <div className="relative hidden xl:block">
-              <input 
-                className="bg-surface-container-low border-none rounded-full py-2 pl-6 pr-12 w-64 focus:ring-2 focus:ring-primary text-sm transition-all focus:outline-none" 
-                placeholder="Buscar historias..." 
-                type="text"
-                disabled
-                title="Búsqueda global (Próximamente)"
-              />
-              <span className="material-symbols-outlined absolute right-4 top-2 text-outline-variant">search</span>
-            </div>
-            
             <div className="flex items-center gap-2 lg:gap-4">
-              {/* Fake Cart Icon for aesthetics as requested by design */}
-              <button className="active:scale-95 transition-transform hidden sm:flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low" title="Tu Carrito (No aplica)">
-                <span className="material-symbols-outlined text-on-surface-variant">shopping_cart</span>
-              </button>
 
               {user ? (
                 <>

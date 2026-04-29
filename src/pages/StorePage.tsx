@@ -6,6 +6,7 @@ import { CATEGORIES } from '../lib/utils';
 export function StorePage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('recent');
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const { ebooks, loading } = useEbooks(category);
 
@@ -15,7 +16,15 @@ export function StorePage() {
           e.title.toLowerCase().includes(search.toLowerCase()) ||
           e.description?.toLowerCase().includes(search.toLowerCase())
       )
-    : ebooks;
+    : [...ebooks];
+
+  if (sortBy === 'popular') {
+    filtered.sort((a, b) => (b.downloads_count || 0) - (a.downloads_count || 0));
+  } else if (sortBy === 'price_asc') {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortBy === 'price_desc') {
+    filtered.sort((a, b) => b.price - a.price);
+  }
 
   const currentCategoryLabel = CATEGORIES.find(c => c.id === category)?.label || 'Todas';
 
@@ -58,13 +67,13 @@ export function StorePage() {
           </div>
           <div className="relative z-10 max-w-2xl animate-slide-up">
             <span className="inline-block px-4 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.3em] mb-6 border border-white/20">
-              Nueva Colección 2026
+              Catálogo Destacado
             </span>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-8 uppercase">
-              Libera tu <br /> <span className="text-on-primary-container">Potencial</span>
+              E-books <br /> <span className="text-on-primary-container">Premium</span>
             </h1>
             <p className="text-lg md:text-xl text-white/80 mb-10 font-medium max-w-lg">
-              La biblioteca digital más elegante del mundo. E-books curados para mentes que no se detienen.
+              Descubre el conocimiento que transforma de la mano de creadores independientes y expertos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
               <div className="flex-1 relative group">
@@ -111,10 +120,15 @@ export function StorePage() {
           
           <div className="flex gap-4 items-center">
             <span className="text-[10px] uppercase tracking-widest font-black text-on-surface-variant opacity-40">Ordenar por</span>
-            <select className="bg-transparent font-bold text-sm text-on-surface outline-none cursor-pointer hover:text-primary transition-colors">
-              <option>Recientes</option>
-              <option>Más Populares</option>
-              <option>Precio: Bajo a Alto</option>
+            <select 
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="bg-transparent font-bold text-sm text-on-surface outline-none cursor-pointer hover:text-primary transition-colors"
+            >
+              <option value="recent">Recientes</option>
+              <option value="popular">Más Populares</option>
+              <option value="price_asc">Precio: Bajo a Alto</option>
+              <option value="price_desc">Precio: Alto a Bajo</option>
             </select>
           </div>
         </div>
@@ -153,40 +167,7 @@ export function StorePage() {
           </div>
         )}
 
-        {/* Promotion Banner */}
-        <div className="mt-24 bg-white rounded-[3rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 border border-outline-variant/10 shadow-sm relative overflow-hidden group">
-          <div className="absolute top-0 left-0 w-full h-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-          <div className="max-w-md relative z-10">
-            <span className="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Oferta Exclusiva</span>
-            <h2 className="text-4xl md:text-5xl font-black text-on-surface tracking-tighter uppercase leading-[1.1] mb-6">
-              Inicia tu <br /> <span className="text-secondary">Colección</span>
-            </h2>
-            <p className="text-on-surface-variant text-lg mb-10 font-medium leading-relaxed">
-              Elige tus 5 historias favoritas de nuestra selección editorial y obtén un 50% de descuento inmediato.
-            </p>
-            <button className="bg-on-surface text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all active:scale-95 shadow-xl shadow-on-surface/10 hover:shadow-primary/20">
-              Crear mi pack ahora
-            </button>
-          </div>
-          <div className="flex -space-x-8 relative z-10">
-            {[1, 2, 3].map((i) => (
-              <div 
-                key={i} 
-                className={`w-32 h-48 md:w-40 md:h-60 rounded-2xl shadow-2xl border-4 border-white transition-transform duration-500 group-hover:scale-110 group-hover:rotate-${i === 2 ? '0' : (i === 1 ? '-12' : '12')}`}
-                style={{ 
-                  transform: `rotate(${i === 2 ? '0' : (i === 1 ? '-12' : '12')}deg)`,
-                  zIndex: i === 2 ? 20 : 10
-                }}
-              >
-                <img 
-                  alt={`Book ${i}`} 
-                  className="w-full h-full object-cover rounded-xl" 
-                  src={`https://images.unsplash.com/photo-${i === 1 ? '1589829085413-56de8ae18c73' : (i === 2 ? '1544947950-fa07a98d237f' : '1512820790803-83ca734da794')}?auto=format&fit=crop&q=80&w=400`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+
       </section>
 
       {/* Bottom Sheet - Mobile Only */}

@@ -62,7 +62,7 @@ export function EbookCard({ ebook, refCode }: EbookCardProps) {
             // e.preventDefault();
           }}
         >
-          <span className="material-symbols-outlined text-sm md:text-base">add_shopping_cart</span>
+          <span className="material-symbols-outlined text-sm md:text-base">arrow_outward</span>
         </button>
       </div>
     </Link>

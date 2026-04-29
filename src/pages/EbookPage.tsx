@@ -188,7 +188,7 @@ export function EbookPage() {
                   <input
                     id="buyer-name"
                     type="text"
-                    className={`w-full bg-transparent border-b ${errors.name ? 'border-error' : 'border-outline-variant/30'} py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20`}
+                    className={`w-full bg-surface-container-low border ${errors.name ? 'border-error' : 'border-outline-variant/30'} rounded-xl px-4 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface/30`}
                     placeholder="INTRODUCE TU NOMBRE"
                     value={buyerName}
                     onChange={(e) => { setBuyerName(e.target.value); setErrors(prev => ({ ...prev, name: undefined })); }}
@@ -201,7 +201,7 @@ export function EbookPage() {
                   <input
                     id="buyer-email"
                     type="email"
-                    className={`w-full bg-transparent border-b ${errors.email ? 'border-error' : 'border-outline-variant/30'} py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-on-surface/20`}
+                    className={`w-full bg-surface-container-low border ${errors.email ? 'border-error' : 'border-outline-variant/30'} rounded-xl px-4 py-4 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-on-surface/30`}
                     placeholder="TU@EMAIL.COM"
                     value={buyerEmail}
                     onChange={(e) => { setBuyerEmail(e.target.value); setErrors(prev => ({ ...prev, email: undefined })); }}
@@ -225,9 +225,13 @@ export function EbookPage() {
                 </button>
               </form>
 
-              <div className="mt-12 pt-8 border-t border-outline-variant/10 text-center">
-                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 leading-relaxed">
-                  Serás redirigido a Mercado Pago para completar tu transacción de forma segura mediante encriptación bancaria.
+              <div className="mt-8 pt-8 border-t border-outline-variant/10 flex flex-col gap-4">
+                <div className="flex items-center justify-center gap-2 text-on-surface-variant opacity-60">
+                  <span className="material-symbols-outlined text-sm">lock</span>
+                  <span className="font-label text-[10px] uppercase tracking-[0.2em] font-bold">Pago Seguro Encriptado</span>
+                </div>
+                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-40 leading-relaxed text-center">
+                  Serás redirigido a Mercado Pago para completar tu transacción de forma segura. Recibirás tu acceso inmediatamente tras el pago.
                 </p>
               </div>
             </div>
