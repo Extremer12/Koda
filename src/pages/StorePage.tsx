@@ -46,12 +46,6 @@ export function StorePage() {
           ))}
         </nav>
         
-        <div className="mt-auto p-6 bg-primary/5 rounded-[2rem] border border-primary/10 relative overflow-hidden group cursor-pointer transition-all hover:bg-primary/10">
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 blur-2xl rounded-full transition-transform group-hover:scale-150"></div>
-          <p className="font-black text-primary text-[10px] uppercase tracking-[0.2em] mb-2">KODA+ PREMIUM</p>
-          <p className="text-xs text-on-surface-variant leading-relaxed mb-4 font-medium">Lectura ilimitada en toda la biblioteca.</p>
-          <button className="w-full bg-primary text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all shadow-md shadow-primary/20">Suscribirme</button>
-        </div>
       </aside>
 
       {/* Main Content */}

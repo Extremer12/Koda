@@ -41,7 +41,7 @@ export function Navbar() {
                   : 'text-on-surface-variant font-medium hover:text-primary'
               } transition-all duration-300`}
             >
-              Vender en KODA
+              {profile?.role === 'creator' ? 'Mi Tienda' : 'Vender en KODA'}
             </Link>
             
             {profile?.role === 'creator' && (

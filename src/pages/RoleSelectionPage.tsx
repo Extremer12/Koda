@@ -72,11 +72,16 @@ export function RoleSelectionPage() {
               <span className="material-symbols-outlined text-4xl">menu_book</span>
             </div>
             <h3 className="text-2xl font-black mb-4 uppercase tracking-tight">Vender E-books</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed mb-8">
-              Soy autor o creador de contenido. Quiero publicar mis obras, administrar mi propia tienda y ganar dinero.
+            <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
+              Sube tus archivos y vende directamente. Ganancia neta del 91.5% con pagos automáticos e instantáneos vía Mercado Pago.
             </p>
+            <ul className="text-[9px] text-primary font-bold uppercase tracking-widest space-y-2 mb-8 opacity-80">
+              <li>• 91.5% de ganancia</li>
+              <li>• Pagos instantáneos</li>
+              <li>• Sin suscripciones</li>
+            </ul>
             <div className="mt-auto w-full py-4 border-t border-outline-variant/10 text-[10px] font-black uppercase tracking-widest text-primary">
-              {loading === 'creator' ? 'Procesando...' : '¡Quiero mi Tienda!'}
+              {loading === 'creator' ? 'Configurando...' : '¡Quiero mi Tienda!'}
             </div>
           </div>
 
@@ -89,9 +94,14 @@ export function RoleSelectionPage() {
               <span className="material-symbols-outlined text-4xl">campaign</span>
             </div>
             <h3 className="text-2xl font-black mb-4 uppercase tracking-tight">Ser Afiliado</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed mb-8">
-              Quiero recomendar los libros de otros creadores y ganar comisiones por cada venta realizada con mi link.
+            <p className="text-sm text-on-surface-variant leading-relaxed mb-6">
+              Recomienda libros y gana comisiones de hasta el 80%. Recibe tu dinero en el acto con nuestro sistema de Split Payment.
             </p>
+            <ul className="text-[9px] text-secondary font-bold uppercase tracking-widest space-y-2 mb-8 opacity-80">
+              <li>• Hasta 80% comisión</li>
+              <li>• Split Payment Real</li>
+              <li>• Link de socio único</li>
+            </ul>
             <div className="mt-auto w-full py-4 border-t border-outline-variant/10 text-[10px] font-black uppercase tracking-widest text-secondary opacity-0 group-hover:opacity-100 transition-opacity">
               Elegir este rol
             </div>

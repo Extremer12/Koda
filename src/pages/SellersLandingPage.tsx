@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export function SellersLandingPage() {
+  const { user, profile } = useAuth();
+
+  const isCreator = profile?.role === 'creator';
+  const isLoggedIn = !!user;
+
   return (
     <main className="bg-surface min-h-screen pt-24 md:pt-32 pb-24 px-6 md:px-12 animate-fade-in">
       <div className="max-w-[1920px] mx-auto">
@@ -8,22 +14,35 @@ export function SellersLandingPage() {
         {/* Hero Section */}
         <section className="max-w-4xl mb-24 md:mb-40">
           <span className="font-label text-[10px] uppercase tracking-[0.4em] text-primary font-black mb-6 block animate-slide-up">
-            Vende y monetiza
+            {isCreator ? 'Gestiona tu imperio' : 'Vende y monetiza'}
           </span>
           <h1 className="font-headline font-black text-5xl md:text-7xl lg:text-8xl text-on-surface uppercase tracking-tighter leading-[0.9] mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
             Tu conocimiento<br />
-            <span className="text-primary">tiene valor.</span>
+            <span className="text-primary">{isCreator ? 'está generando.' : 'tiene valor.'}</span>
           </h1>
           <p className="font-body text-xl md:text-2xl text-on-surface-variant leading-relaxed opacity-80 max-w-2xl mb-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            KODA es el ecosistema editorial más elegante para vender tus e-books y escalar tus ingresos a través de una red de afiliados.
+            {isCreator 
+              ? 'Bienvenido de nuevo al centro de mando. Aquí es donde la elegancia editorial se encuentra con el rendimiento financiero.'
+              : 'KODA es el ecosistema editorial más elegante para vender tus e-books y escalar tus ingresos a través de una red de afiliados.'
+            }
           </p>
           <div className="flex flex-col sm:flex-row gap-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-            <Link 
-              to="/login"
-              className="bg-primary text-on-primary font-label text-xs uppercase tracking-[0.2em] font-bold px-10 py-5 text-center hover:brightness-110 transition-all active:scale-95"
-            >
-              Comenzar a vender
-            </Link>
+            {isCreator ? (
+              <Link 
+                to="/dashboard/creator"
+                className="bg-primary text-on-primary font-label text-xs uppercase tracking-[0.2em] font-bold px-10 py-5 text-center hover:brightness-110 transition-all active:scale-95 flex items-center justify-center gap-3"
+              >
+                <span className="material-symbols-outlined text-sm">dashboard</span>
+                Administrar mi Tienda
+              </Link>
+            ) : (
+              <Link 
+                to={isLoggedIn ? "/select-role" : "/login"}
+                className="bg-primary text-on-primary font-label text-xs uppercase tracking-[0.2em] font-bold px-10 py-5 text-center hover:brightness-110 transition-all active:scale-95"
+              >
+                {isLoggedIn ? 'Cambiar a Creador' : 'Comenzar a vender'}
+              </Link>
+            )}
             <a 
               href="#como-funciona"
               className="bg-surface-container-low text-on-surface font-label text-xs uppercase tracking-[0.2em] font-bold px-10 py-5 text-center hover:bg-surface-container-high transition-all active:scale-95 border border-outline-variant/10"
@@ -37,7 +56,7 @@ export function SellersLandingPage() {
         <section id="como-funciona" className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 mb-32">
           
           {/* Creator Role */}
-          <div className="group border border-[#f1f1ec] bg-white p-12 md:p-16 hover:border-primary/30 transition-all duration-500">
+          <div className="group border border-[#f1f1ec] bg-white p-12 md:p-16 hover:border-primary/30 transition-all duration-500 rounded-[2rem]">
             <span className="material-symbols-outlined text-5xl text-primary mb-8 block">menu_book</span>
             <h2 className="font-headline font-black text-3xl md:text-4xl text-on-surface uppercase tracking-tight mb-6">
               Para Creadores
@@ -54,7 +73,7 @@ export function SellersLandingPage() {
           </div>
 
           {/* Affiliate Role */}
-          <div className="group border border-[#f1f1ec] bg-white p-12 md:p-16 hover:border-primary/30 transition-all duration-500">
+          <div className="group border border-[#f1f1ec] bg-white p-12 md:p-16 hover:border-primary/30 transition-all duration-500 rounded-[2rem]">
             <span className="material-symbols-outlined text-5xl text-primary mb-8 block">campaign</span>
             <h2 className="font-headline font-black text-3xl md:text-4xl text-on-surface uppercase tracking-tight mb-6">
               Para Afiliados
@@ -73,7 +92,7 @@ export function SellersLandingPage() {
         </section>
 
         {/* Split Payments Feature */}
-        <section className="bg-surface-container-low rounded-3xl p-12 md:p-24 border border-outline-variant/10 text-center mb-32 relative overflow-hidden">
+        <section className="bg-surface-container-low rounded-[3rem] p-12 md:p-24 border border-outline-variant/10 text-center mb-32 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[100px] rounded-full"></div>
           <div className="relative z-10 max-w-3xl mx-auto">
             <span className="material-symbols-outlined text-6xl text-primary mb-6">call_split</span>
@@ -83,12 +102,14 @@ export function SellersLandingPage() {
             <p className="font-body text-xl text-on-surface-variant leading-relaxed opacity-80 mb-12">
               KODA utiliza la tecnología de Marketplace de Mercado Pago. Esto significa que en el momento exacto en que un cliente realiza una compra, el dinero se divide y se envía automáticamente a la cuenta del Creador y a la del Afiliado de forma instantánea. Sin esperas de 30 días, sin retiros manuales.
             </p>
-            <Link 
-              to="/login"
-              className="inline-block bg-primary text-on-primary font-label text-xs uppercase tracking-[0.2em] font-bold px-12 py-5 hover:brightness-110 transition-all active:scale-95"
-            >
-              Crear mi cuenta gratis
-            </Link>
+            {!isCreator && (
+              <Link 
+                to={isLoggedIn ? "/select-role" : "/login"}
+                className="inline-block bg-primary text-on-primary font-label text-xs uppercase tracking-[0.2em] font-bold px-12 py-5 hover:brightness-110 transition-all active:scale-95"
+              >
+                {isLoggedIn ? 'Convertirme en Vendedor' : 'Crear mi cuenta gratis'}
+              </Link>
+            )}
           </div>
         </section>
 
