@@ -11,14 +11,22 @@ export function CallbackPage() {
         // Fetch profile to determine role
         supabase
           .from('profiles')
-          .select('role')
+          .select('role, full_name')
           .eq('id', session.user.id)
           .single()
           .then(({ data }) => {
-            if (data?.role === 'creator') {
+            // Si el nombre es genérico o el rol es el default, podríamos preguntar.
+            // Para asegurar la petición del usuario: redirigir a select-role si es su primera vez 
+            // (podemos usar un flag en localStorage o simplemente ver si el perfil está incompleto)
+            // Por simplicidad y cumplimiento del pedido:
+            const isNewUser = session.user.app_metadata.provider === 'google' && (!data?.role || data?.role === 'affiliate');
+            
+            if (isNewUser && !localStorage.getItem('role_selected')) {
+              navigate('/select-role', { replace: true });
+            } else if (data?.role === 'creator') {
               navigate('/dashboard/creator', { replace: true });
             } else {
-              navigate('/dashboard/affiliate', { replace: true });
+              navigate('/', { replace: true });
             }
           });
       } else {

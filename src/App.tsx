@@ -8,6 +8,7 @@ import { StorePage } from './pages/StorePage';
 import { EbookPage } from './pages/EbookPage';
 import { LoginPage } from './pages/LoginPage';
 import { CallbackPage } from './pages/CallbackPage';
+import { RoleSelectionPage } from './pages/RoleSelectionPage';
 import { CreatorDashboard } from './pages/CreatorDashboard';
 import { CreatorSettings } from './pages/CreatorSettings';
 import { AffiliateDashboard } from './pages/AffiliateDashboard';
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/ebook/:id" element={<EbookPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/callback" element={<CallbackPage />} />
+          <Route path="/select-role" element={<RoleSelectionPage />} />
           <Route path="/dashboard/creator" element={<CreatorDashboard />} />
           <Route path="/dashboard/creator/settings" element={<CreatorSettings />} />
           <Route path="/dashboard/affiliate" element={<AffiliateDashboard />} />

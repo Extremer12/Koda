@@ -47,13 +47,10 @@ export function Navbar() {
             {profile?.role === 'creator' && (
               <Link
                 to="/dashboard/creator"
-                className={`${
-                  location.pathname.includes('/creator') 
-                    ? 'text-primary font-bold border-b-2 border-primary pb-1' 
-                    : 'text-on-surface-variant font-medium hover:text-primary'
-                } transition-all duration-300`}
+                className="bg-primary/10 text-primary px-4 py-2 rounded-full font-bold hover:bg-primary hover:text-white transition-all duration-300 flex items-center gap-2"
               >
-                Ediciones
+                <span className="material-symbols-outlined text-sm">storefront</span>
+                Administrar mi Tienda
               </Link>
             )}
 

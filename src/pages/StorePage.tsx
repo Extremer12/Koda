@@ -6,6 +6,7 @@ import { CATEGORIES } from '../lib/utils';
 export function StorePage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const { ebooks, loading } = useEbooks(category);
 
   const filtered = search
@@ -16,152 +17,243 @@ export function StorePage() {
       )
     : ebooks;
 
+  const currentCategoryLabel = CATEGORIES.find(c => c.id === category)?.label || 'Todas';
+
   return (
-    <main className="max-w-[1920px] mx-auto flex gap-0 mt-0">
-      {/* SideNavBar / Categorías */}
-      <aside className="hidden xl:flex h-[calc(100vh-88px)] w-64 sticky top-[88px] flex-col gap-2 p-6 bg-surface border-r border-outline-variant/10 text-sm">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-on-surface">Categorías</h3>
-          <p className="text-xs text-on-surface-variant">Explora el catálogo</p>
+    <main className="max-w-[1920px] mx-auto flex flex-col lg:flex-row gap-0 mt-0 relative min-h-screen">
+      {/* Sidebar - Visible from LG */}
+      <aside className="hidden lg:flex h-[calc(100vh-88px)] w-72 sticky top-[88px] flex-col gap-2 p-8 bg-white border-r border-outline-variant/10 shadow-[20px_0_40px_rgba(0,0,0,0.02)] z-10">
+        <div className="mb-8">
+          <h3 className="text-2xl font-black text-on-surface uppercase tracking-tighter">Explorar</h3>
+          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-on-surface-variant opacity-50 mt-1">Categorías de la tienda</p>
         </div>
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-1 overflow-y-auto no-scrollbar pr-2">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setCategory(cat.id)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left ${
+              className={`flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-left group ${
                 category === cat.id
-                  ? 'bg-white text-primary shadow-sm hover:translate-x-1 font-bold'
-                  : 'text-on-surface-variant hover:bg-white hover:text-on-surface hover:translate-x-1'
+                  ? 'bg-primary text-white shadow-lg shadow-primary/20 font-bold scale-[1.02]'
+                  : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface hover:translate-x-1'
               }`}
             >
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: category === cat.id ? "'FILL' 1" : "'FILL' 0" }}>
-                {cat.id === 'all' ? 'widgets' : 
-                 cat.id === 'programacion' ? 'memory' : 
-                 cat.id === 'diseno' ? 'palette' : 
-                 cat.id === 'negocios' ? 'business_center' : 
-                 cat.id === 'marketing' ? 'campaign' : 
-                 'menu_book'}
+              <span className={`material-symbols-outlined text-xl transition-transform group-hover:scale-110 ${category === cat.id ? 'fill-1' : ''}`}>
+                {getCategoryIcon(cat.id)}
               </span>
-              <span>{cat.label === 'Todos' ? 'Todas' : cat.label}</span>
+              <span className="text-sm font-medium tracking-tight">{cat.label === 'Todos' ? 'Todas' : cat.label}</span>
             </button>
           ))}
         </nav>
-        <div className="mt-auto p-4 bg-secondary-container rounded-xl border border-secondary-container">
-          <p className="font-bold text-on-secondary-container text-xs mb-1">MEMBRESÍA KODA+</p>
-          <p className="text-[10px] text-on-secondary-container opacity-80 leading-relaxed mb-3">Lectura ilimitada en miles de títulos seleccionados.</p>
-          <button className="w-full bg-secondary text-white py-2 rounded-lg text-xs font-bold active:scale-95 transition-all shadow-md shadow-secondary/20 hover:bg-secondary-dim">Unirse ahora</button>
+        
+        <div className="mt-auto p-6 bg-primary/5 rounded-[2rem] border border-primary/10 relative overflow-hidden group cursor-pointer transition-all hover:bg-primary/10">
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 blur-2xl rounded-full transition-transform group-hover:scale-150"></div>
+          <p className="font-black text-primary text-[10px] uppercase tracking-[0.2em] mb-2">KODA+ PREMIUM</p>
+          <p className="text-xs text-on-surface-variant leading-relaxed mb-4 font-medium">Lectura ilimitada en toda la biblioteca.</p>
+          <button className="w-full bg-primary text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all shadow-md shadow-primary/20">Suscribirme</button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <section className="flex-1 px-6 lg:px-12 py-8 min-w-0 bg-surface">
+      <section className="flex-1 px-4 md:px-8 lg:px-12 py-8 min-w-0 bg-surface">
         {/* Hero Section */}
-        <header className="relative overflow-hidden rounded-3xl mb-12 p-8 md:p-12 flex flex-col justify-center min-h-[400px] hero-gradient group">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        <header className="relative overflow-hidden rounded-[2.5rem] mb-12 p-8 md:p-16 flex flex-col justify-center min-h-[450px] hero-gradient shadow-2xl shadow-primary/10">
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
           </div>
-          <div className="relative z-10 max-w-2xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-on-primary tracking-tighter leading-[1.1] mb-6">
-              Descubre tu próxima gran historia
+          <div className="relative z-10 max-w-2xl animate-slide-up">
+            <span className="inline-block px-4 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.3em] mb-6 border border-white/20">
+              Nueva Colección 2026
+            </span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-8 uppercase">
+              Libera tu <br /> <span className="text-on-primary-container">Potencial</span>
             </h1>
-            <p className="text-base md:text-lg text-on-primary/80 mb-8 font-medium">
-              Miles de e-books seleccionados para mentes curiosas. La biblioteca digital más clara y elegante del mundo.
+            <p className="text-lg md:text-xl text-white/80 mb-10 font-medium max-w-lg">
+              La biblioteca digital más elegante del mundo. E-books curados para mentes que no se detienen.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-              <div className="flex-1 relative">
+              <div className="flex-1 relative group">
                 <input 
-                  className="w-full px-6 py-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition-all outline-none" 
-                  placeholder="¿Qué quieres leer hoy?" 
+                  className="w-full pl-14 pr-6 py-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder:text-white/50 focus:ring-4 focus:ring-white/10 focus:bg-white/20 transition-all outline-none text-lg font-medium" 
+                  placeholder="Buscar títulos, autores..." 
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <span className="material-symbols-outlined absolute right-4 top-4 text-white/60">auto_awesome</span>
+                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors text-2xl">search</span>
               </div>
             </div>
           </div>
-          <div className="hidden xl:block absolute right-12 top-1/2 -translate-y-1/2 w-[280px] h-[400px] rotate-6 group-hover:rotate-3 transition-transform duration-700">
-            <div className="w-full h-full bg-gradient-to-br from-white/40 to-white/10 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-4">
+          
+          <div className="hidden xl:block absolute right-20 top-1/2 -translate-y-1/2 w-[320px] h-[450px] rotate-6 group-hover:rotate-2 transition-transform duration-1000 ease-out">
+            <div className="w-full h-full bg-gradient-to-br from-white/30 to-white/5 backdrop-blur-md rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.3)] border border-white/20 p-5 p-5 animate-float">
               <img 
                 alt="Featured Book" 
-                className="w-full h-full object-cover rounded-xl" 
+                className="w-full h-full object-cover rounded-[1.5rem] shadow-2xl" 
                 src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800"
               />
             </div>
           </div>
         </header>
 
+        {/* Categories Mobile Toggle (Fixed Bottom Button) */}
+        <div className="lg:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[40] animate-bounce-subtle">
+           <button 
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="bg-on-surface text-white px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl flex items-center gap-3 active:scale-95 transition-all border border-white/10"
+           >
+             <span className="material-symbols-outlined text-sm">widgets</span>
+             {currentCategoryLabel}
+           </button>
+        </div>
+
         {/* Product Grid */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-black text-on-surface tracking-tight mb-1">Novedades Destacadas</h2>
-            <p className="text-on-surface-variant text-sm">Los lanzamientos más esperados de la colección</p>
+        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="animate-fade-in">
+            <h2 className="text-3xl font-black text-on-surface tracking-tighter uppercase mb-2">Novedades</h2>
+            <div className="h-1 w-12 bg-primary rounded-full"></div>
           </div>
-          {/* Mobile Categories Dropdown */}
-          <div className="xl:hidden flex gap-2 overflow-x-auto pb-2 -mx-6 px-6 no-scrollbar">
-             {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategory(cat.id)}
-                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold transition-all ${
-                  category === cat.id 
-                    ? 'bg-primary text-white shadow-md' 
-                    : 'bg-white text-on-surface-variant border border-outline-variant/20'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+          
+          <div className="flex gap-4 items-center">
+            <span className="text-[10px] uppercase tracking-widest font-black text-on-surface-variant opacity-40">Ordenar por</span>
+            <select className="bg-transparent font-bold text-sm text-on-surface outline-none cursor-pointer hover:text-primary transition-colors">
+              <option>Recientes</option>
+              <option>Más Populares</option>
+              <option>Precio: Bajo a Alto</option>
+            </select>
           </div>
         </div>
 
         {loading ? (
-           <div className="flex justify-center py-24">
-             <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+           <div className="flex justify-center py-32">
+             <div className="h-16 w-16 border-[6px] border-primary/20 border-t-primary rounded-full animate-spin"></div>
            </div>
         ) : filtered.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 md:gap-8">
             {filtered.map((ebook, i) => (
               <div 
                 key={ebook.id} 
                 className="animate-slide-up"
-                style={{ animationDelay: `${(i % 10) * 0.05}s` }}
+                style={{ animationDelay: `${(i % 8) * 0.1}s` }}
               >
                 <EbookCard ebook={ebook} />
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-white rounded-3xl border border-outline-variant/10">
-            <span className="material-symbols-outlined text-4xl text-on-surface-variant opacity-40 mb-4 block">
-              search_off
-            </span>
-            <h3 className="font-headline font-bold text-xl text-on-surface">No se encontraron títulos</h3>
-            <p className="text-sm mt-2 text-on-surface-variant">
-              Intenta con otra búsqueda o categoría.
+          <div className="text-center py-32 bg-white rounded-[3rem] border border-outline-variant/10 shadow-sm animate-fade-in">
+            <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="material-symbols-outlined text-4xl text-on-surface-variant opacity-30">search_off</span>
+            </div>
+            <h3 className="font-black text-2xl text-on-surface uppercase tracking-tight">Sin resultados</h3>
+            <p className="text-on-surface-variant mt-2 max-w-xs mx-auto font-medium">
+              No encontramos e-books en la categoría <span className="text-primary">"{currentCategoryLabel}"</span> con esos términos.
             </p>
+            <button 
+              onClick={() => {setSearch(''); setCategory('all');}}
+              className="mt-8 text-primary font-black text-[10px] uppercase tracking-[0.2em] underline underline-offset-8 hover:opacity-70 transition-opacity"
+            >
+              Ver todo el catálogo
+            </button>
           </div>
         )}
 
         {/* Promotion Banner */}
-        <div className="mt-16 bg-white rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-outline-variant/10 shadow-sm luminous-shadow">
-          <div className="max-w-md">
-            <span className="text-secondary font-bold text-xs tracking-widest uppercase mb-2 block">Oferta Limitada</span>
-            <h2 className="text-3xl font-black text-on-surface tracking-tight mb-4">Pack de Iniciación: 5 E-books por $25</h2>
-            <p className="text-on-surface-variant text-sm mb-6">Elige tus 5 historias favoritas de la selección editorial y ahorra más del 50% en tu primera compra.</p>
-            <button className="bg-primary text-white flex items-center justify-center w-full md:w-auto px-8 py-3 rounded-lg font-bold hover:bg-primary-dim hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
-              Crear mi pack
+        <div className="mt-24 bg-white rounded-[3rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 border border-outline-variant/10 shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-full h-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+          <div className="max-w-md relative z-10">
+            <span className="text-secondary font-black text-[10px] tracking-[0.3em] uppercase mb-4 block">Oferta Exclusiva</span>
+            <h2 className="text-4xl md:text-5xl font-black text-on-surface tracking-tighter uppercase leading-[1.1] mb-6">
+              Inicia tu <br /> <span className="text-secondary">Colección</span>
+            </h2>
+            <p className="text-on-surface-variant text-lg mb-10 font-medium leading-relaxed">
+              Elige tus 5 historias favoritas de nuestra selección editorial y obtén un 50% de descuento inmediato.
+            </p>
+            <button className="bg-on-surface text-white px-10 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all active:scale-95 shadow-xl shadow-on-surface/10 hover:shadow-primary/20">
+              Crear mi pack ahora
             </button>
           </div>
-          <div className="flex -space-x-4">
-            <img alt="Book 1" className="w-24 h-36 object-cover rounded-md shadow-lg border-2 border-white rotate-[-10deg]" src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=200"/>
-            <img alt="Book 2" className="w-24 h-36 object-cover rounded-md shadow-lg border-2 border-white rotate-0 z-10" src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=200"/>
-            <img alt="Book 3" className="w-24 h-36 object-cover rounded-md shadow-lg border-2 border-white rotate-[10deg]" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=200"/>
+          <div className="flex -space-x-8 relative z-10">
+            {[1, 2, 3].map((i) => (
+              <div 
+                key={i} 
+                className={`w-32 h-48 md:w-40 md:h-60 rounded-2xl shadow-2xl border-4 border-white transition-transform duration-500 group-hover:scale-110 group-hover:rotate-${i === 2 ? '0' : (i === 1 ? '-12' : '12')}`}
+                style={{ 
+                  transform: `rotate(${i === 2 ? '0' : (i === 1 ? '-12' : '12')}deg)`,
+                  zIndex: i === 2 ? 20 : 10
+                }}
+              >
+                <img 
+                  alt={`Book ${i}`} 
+                  className="w-full h-full object-cover rounded-xl" 
+                  src={`https://images.unsplash.com/photo-${i === 1 ? '1589829085413-56de8ae18c73' : (i === 2 ? '1544947950-fa07a98d237f' : '1512820790803-83ca734da794')}?auto=format&fit=crop&q=80&w=400`}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Bottom Sheet - Mobile Only */}
+      {isCategoryModalOpen && (
+        <>
+          <div 
+            className="bottom-sheet-overlay" 
+            onClick={() => setIsCategoryModalOpen(false)}
+          />
+          <div className="bottom-sheet-content">
+            <div className="bottom-sheet-handle" />
+            <div className="px-8 pb-12">
+              <header className="mb-8">
+                <h3 className="text-2xl font-black uppercase tracking-tighter">Categorías</h3>
+                <p className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant opacity-50">Selecciona un tema para filtrar</p>
+              </header>
+              <div className="grid grid-cols-1 gap-2">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setCategory(cat.id);
+                      setIsCategoryModalOpen(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] transition-all text-left ${
+                      category === cat.id
+                        ? 'bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]'
+                        : 'bg-surface-container-low text-on-surface active:scale-95'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      {getCategoryIcon(cat.id)}
+                    </span>
+                    <span className="font-bold uppercase text-[10px] tracking-[0.1em]">{cat.label}</span>
+                    {category === cat.id && (
+                      <span className="material-symbols-outlined ml-auto text-sm">check_circle</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
+}
+
+function getCategoryIcon(id: string) {
+  switch (id) {
+    case 'all': return 'widgets';
+    case 'programacion': return 'memory';
+    case 'diseno': return 'palette';
+    case 'negocios': return 'business_center';
+    case 'marketing': return 'campaign';
+    case 'desarrollo-personal': return 'self_improvement';
+    case 'finanzas': return 'payments';
+    case 'productividad': return 'bolt';
+    case 'idiomas': return 'language';
+    case 'salud': return 'favorite';
+    default: return 'menu_book';
+  }
 }
