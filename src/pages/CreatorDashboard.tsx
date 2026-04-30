@@ -88,33 +88,61 @@ export function CreatorDashboard() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!formData.title || !formData.price || !ebookFile) {
-      toast.error('Completa título, precio y sube el archivo');
+    
+    // Validaciones iniciales
+    if (!formData.title.trim() || !formData.price || !ebookFile) {
+      toast.error('Completa el título, precio y selecciona el archivo del e-book');
+      return;
+    }
+
+    // Validación de Portada (si existe)
+    if (coverFile) {
+      const validCoverTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!validCoverTypes.includes(coverFile.type)) {
+        toast.error('La portada debe ser una imagen (JPG, PNG o WEBP)');
+        return;
+      }
+      if (coverFile.size > 5 * 1024 * 1024) { // 5MB
+        toast.error('La portada no debe superar los 5MB');
+        return;
+      }
+    }
+
+    // Validación de E-book
+    const validEbookTypes = ['application/pdf', 'application/epub+zip'];
+    if (!validEbookTypes.includes(ebookFile.type) && !ebookFile.name.endsWith('.epub')) {
+      toast.error('El formato del e-book debe ser PDF o EPUB');
+      return;
+    }
+    if (ebookFile.size > 100 * 1024 * 1024) { // 100MB
+      toast.error('El e-book no debe superar los 100MB');
       return;
     }
 
     setSubmitting(true);
-    const toastId = toast.loading('Iniciando publicación...');
+    const toastId = toast.loading('Preparando archivos...');
     try {
       const timestamp = Date.now();
       let coverUrl = '';
       
       if (coverFile) {
-        toast.loading('Subiendo portada...', { id: toastId });
-        const coverPath = `${user!.id}/${timestamp}-cover.${coverFile.name.split('.').pop()}`;
+        toast.loading(`Subiendo portada: ${Math.round(coverFile.size / 1024)}KB...`, { id: toastId });
+        const coverExt = coverFile.name.split('.').pop();
+        const coverPath = `${user!.id}/${timestamp}-cover.${coverExt}`;
         const { error: coverErr } = await supabase.storage.from('covers').upload(coverPath, coverFile);
-        if (coverErr) throw coverErr;
+        if (coverErr) throw new Error(`Error en portada: ${coverErr.message}`);
         const { data: { publicUrl } } = supabase.storage.from('covers').getPublicUrl(coverPath);
         coverUrl = publicUrl;
       }
 
-      toast.loading('Subiendo archivo e-book (esto puede demorar)...', { id: toastId });
-      const ebookPath = `${user!.id}/${timestamp}-ebook.${ebookFile.name.split('.').pop()}`;
+      toast.loading(`Subiendo e-book: ${Math.round(ebookFile.size / (1024 * 1024))}MB (no cierres esta ventana)...`, { id: toastId });
+      const ebookExt = ebookFile.name.split('.').pop();
+      const ebookPath = `${user!.id}/${timestamp}-ebook.${ebookExt}`;
       const { error: ebookErr } = await supabase.storage.from('ebooks').upload(ebookPath, ebookFile);
-      if (ebookErr) throw ebookErr;
+      if (ebookErr) throw new Error(`Error en e-book: ${ebookErr.message}`);
 
-      toast.loading('Finalizando publicación...', { id: toastId });
-      const { error } = await supabase.from('ebooks').insert({
+      toast.loading('Registrando en la base de datos...', { id: toastId });
+      const { error: dbError } = await supabase.from('ebooks').insert({
         title: formData.title.trim(),
         description: formData.description.trim() || null,
         price: parseFloat(formData.price),
@@ -125,9 +153,9 @@ export function CreatorDashboard() {
         commission_percent: parseInt(formData.commission_percent),
       });
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
-      toast.success('¡E-book publicado exitosamente!', { id: toastId });
+      toast.success('¡E-book publicado con éxito!', { id: toastId });
       setShowForm(false);
       setFormData({ title: '', description: '', price: '', category: 'general', commission_percent: '30' });
       setCoverFile(null);
@@ -135,7 +163,7 @@ export function CreatorDashboard() {
       refetchEbooks();
     } catch (err) {
       console.error('Error publishing:', err);
-      toast.error(err instanceof Error ? `Error: ${err.message}` : 'Error al publicar', { id: toastId });
+      toast.error(err instanceof Error ? err.message : 'Fallo en la publicación. Inténtalo de nuevo.', { id: toastId });
     } finally {
       setSubmitting(false);
     }
@@ -396,17 +424,35 @@ export function CreatorDashboard() {
       {showForm && (
         <div className="fixed inset-0 z-[100] bg-surface flex flex-col animate-fade-in overflow-y-auto">
           <div className="max-w-4xl mx-auto w-full px-6 py-12 md:py-24">
-            <header className="flex justify-between items-center mb-12">
+            <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
               <div>
                 <span className="font-label text-[10px] uppercase tracking-[0.4em] text-primary font-black mb-2 block">Nueva Publicación</span>
                 <h2 className="font-headline font-black text-3xl md:text-5xl text-on-surface uppercase tracking-tight">Cargar Contenido</h2>
               </div>
-              <button 
-                onClick={() => setShowForm(false)}
-                className="w-12 h-12 rounded-full border border-outline-variant/10 flex items-center justify-center hover:bg-surface-container-low transition-all"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
+              <div className="flex items-center gap-4">
+                <div className="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-4 flex items-center gap-4 group cursor-help relative">
+                  <span className="material-symbols-outlined text-primary">info</span>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-on-surface">Requisitos</span>
+                    <span className="text-[8px] uppercase tracking-widest text-on-surface-variant opacity-60">PDF/EPUB · Máx 100MB</span>
+                  </div>
+                  {/* Tooltip on hover */}
+                  <div className="absolute top-full right-0 mt-4 w-64 bg-on-surface text-white p-6 rounded-3xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-20">
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Guía Técnica</p>
+                    <ul className="space-y-2 text-[10px] opacity-70">
+                      <li className="flex items-center gap-2"><span className="w-1 h-1 bg-primary rounded-full"></span> Portada: JPG o PNG (Recomendado 1200x1600px)</li>
+                      <li className="flex items-center gap-2"><span className="w-1 h-1 bg-primary rounded-full"></span> E-book: Formato PDF o EPUB</li>
+                      <li className="flex items-center gap-2"><span className="w-1 h-1 bg-primary rounded-full"></span> Peso: Máximo 100MB por archivo</li>
+                    </ul>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowForm(false)}
+                  className="w-12 h-12 rounded-full border border-outline-variant/10 flex items-center justify-center hover:bg-surface-container-low transition-all"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
             </header>
             
             <form onSubmit={handleSubmit} className="space-y-12 pb-24">
@@ -496,23 +542,30 @@ export function CreatorDashboard() {
                         </>
                       )}
                     </div>
-                    <input ref={coverInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
+                    <input ref={coverInputRef} type="file" accept=".jpg,.jpeg,.png,.webp" style={{ display: 'none' }} onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
                   </div>
 
                   <div className="space-y-4">
-                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Archivo Digital</label>
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Archivo Digital (E-book)</label>
                     <div 
                       onClick={() => ebookInputRef.current?.click()}
-                      className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all ${
+                      className={`relative border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all ${
                         ebookFile ? 'border-primary bg-primary/5' : 'border-outline-variant/20 hover:border-primary/50'
                       }`}
                     >
-                      <span className={`material-symbols-outlined text-4xl mb-4 ${ebookFile ? 'text-primary' : 'text-on-surface-variant opacity-20'}`}>
-                        {ebookFile ? 'task' : 'upload_file'}
-                      </span>
-                      <span className="font-label text-[10px] uppercase tracking-widest font-bold text-center">
-                        {ebookFile ? ebookFile.name : 'Seleccionar PDF o EPUB'}
-                      </span>
+                      {ebookFile ? (
+                        <div className="text-center">
+                           <span className="material-symbols-outlined text-primary text-5xl mb-4">task</span>
+                           <p className="font-label text-xs font-bold uppercase tracking-widest text-primary max-w-[200px] truncate">{ebookFile.name}</p>
+                           <p className="text-[10px] text-primary/60 mt-1 uppercase tracking-widest">{(ebookFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                           <button className="mt-4 text-[10px] text-on-surface-variant uppercase tracking-widest underline">Cambiar archivo</button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-on-surface-variant text-5xl opacity-20 mb-4">upload_file</span>
+                          <span className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant opacity-40">Subir PDF o EPUB</span>
+                        </>
+                      )}
                     </div>
                     <input ref={ebookInputRef} type="file" accept=".pdf,.epub" style={{ display: 'none' }} onChange={(e) => setEbookFile(e.target.files?.[0] || null)} />
                   </div>
@@ -520,9 +573,12 @@ export function CreatorDashboard() {
               </div>
 
               <div className="pt-12 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-outline-variant/10">
-                <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-on-surface-variant opacity-40 max-w-sm text-center md:text-left">
-                  Al publicar, confirmas que posees los derechos de autor de esta obra y aceptas nuestros términos de servicio.
-                </p>
+                <div className="flex items-center gap-4 max-w-sm">
+                  <span className="material-symbols-outlined text-primary opacity-40">gavel</span>
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-medium text-on-surface-variant opacity-40 text-center md:text-left leading-relaxed">
+                    Al publicar, confirmas que posees los derechos de autor de esta obra y aceptas nuestros términos.
+                  </p>
+                </div>
                 <div className="flex gap-4 w-full md:w-auto">
                   <button 
                     type="button" 
@@ -534,9 +590,13 @@ export function CreatorDashboard() {
                   <button 
                     type="submit" 
                     disabled={submitting}
-                    className="flex-1 md:flex-none bg-primary px-12 py-5 text-on-primary font-label text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/20"
+                    className={`flex-1 md:flex-none px-12 py-5 rounded-full font-label text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl ${
+                      submitting 
+                        ? 'bg-outline-variant/20 text-on-surface/20 cursor-not-allowed' 
+                        : 'bg-primary text-on-primary hover:brightness-110 active:scale-95 shadow-primary/20'
+                    }`}
                   >
-                    {submitting ? 'Publicando...' : 'Publicar Ahora'}
+                    {submitting ? 'PROCESANDO...' : 'PUBLICAR AHORA'}
                   </button>
                 </div>
               </div>
