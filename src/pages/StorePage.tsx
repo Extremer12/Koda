@@ -59,56 +59,54 @@ export function StorePage() {
 
       {/* Main Content */}
       <section className="flex-1 px-4 md:px-8 lg:px-12 py-8 min-w-0 bg-surface">
-        {/* Hero Section */}
-        <header className="relative overflow-hidden rounded-[3rem] mb-16 p-8 md:p-20 flex flex-col justify-center min-h-[500px] bg-on-surface shadow-[0_80px_160px_-40px_rgba(0,0,0,0.4)] group/hero">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] mix-blend-overlay"></div>
-          </div>
-
-          <div className="relative z-10 max-w-3xl animate-fade-in">
-            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 mb-8 transform hover:scale-105 transition-transform cursor-default">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-              <span className="text-white text-[10px] font-black uppercase tracking-[0.4em]">Curaduría Exclusiva</span>
-            </div>
-
-            <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.04em] leading-[0.85] mb-10 uppercase italic">
-              E-books <br /> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-secondary animate-gradient-x">Premium</span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-white/50 mb-12 font-medium max-w-xl leading-relaxed">
-              La biblioteca digital más elegante para mentes que buscan <span className="text-white">trascender.</span>
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-center">
-              <div className="flex-1 relative group/search">
+        {/* Hero Section - Light & Integrated */}
+        <header className="relative mb-20 pt-12 md:pt-24 pb-12 overflow-hidden">
+          {/* Subtle decoration */}
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -z-10 animate-pulse"></div>
+          
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 items-center">
+            <div className="animate-fade-in stagger-1">
+              <div className="inline-flex items-center gap-2 mb-8">
+                <span className="w-8 h-[1px] bg-primary"></span>
+                <span className="text-primary font-black text-[10px] uppercase tracking-[0.4em]">Biblioteca Luminosa</span>
+              </div>
+              
+              <h1 className="text-6xl md:text-8xl font-black text-on-surface tracking-[-0.05em] leading-[0.85] mb-10 uppercase">
+                E-books <br /> 
+                <span className="text-primary italic">Premium.</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-on-surface-variant mb-12 font-medium max-w-lg leading-relaxed opacity-60">
+                La curaduría más refinada de autores independientes. Conocimiento diseñado para ser devorado.
+              </p>
+              
+              <div className="relative max-w-xl group">
                 <input 
-                  className="w-full pl-16 pr-8 py-6 rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-white/10 text-white placeholder:text-white/20 focus:ring-4 focus:ring-primary/20 focus:border-primary/50 transition-all outline-none text-lg font-bold uppercase tracking-tight" 
-                  placeholder="BUSCAR EN LA BIBLIOTECA..." 
+                  className="w-full bg-white border border-outline-variant/10 px-16 py-6 rounded-full text-lg font-bold uppercase tracking-tight shadow-xl shadow-on-surface/5 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all outline-none" 
+                  placeholder="Buscar títulos, temas..." 
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/search:text-primary transition-colors text-3xl">search</span>
+                <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-30 group-focus-within:text-primary transition-colors text-3xl">search</span>
               </div>
             </div>
-          </div>
-          
-          {/* Floating Book Decoration */}
-          <div className="hidden xl:block absolute right-16 top-1/2 -translate-y-1/2 w-[350px] h-[500px] perspective-1000">
-            <div className="w-full h-full relative transform-gpu rotate-y-[-20deg] rotate-x-[10deg] group-hover/hero:rotate-y-[-5deg] group-hover/hero:rotate-x-[0deg] transition-all duration-1000 ease-out">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75 group-hover/hero:scale-110 transition-transform duration-1000"></div>
-              <div className="relative w-full h-full bg-gradient-to-br from-white/10 to-transparent backdrop-blur-sm rounded-[2.5rem] border border-white/10 p-4 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.5)]">
+
+            <div className="hidden xl:flex justify-center relative animate-fade-in stagger-2">
+              <div className="relative w-[400px] aspect-[3/4] group">
+                {/* Visual shadow/decoration behind */}
+                <div className="absolute -inset-8 bg-primary/5 blur-3xl rounded-full scale-90 group-hover:scale-110 transition-transform duration-1000"></div>
+                
                 <img 
                   alt="Featured Book" 
-                  className="w-full h-full object-cover rounded-[1.8rem] shadow-2xl brightness-90 group-hover/hero:brightness-110 transition-all duration-700" 
+                  className="w-full h-full object-cover rounded-[2rem] shadow-[0_60px_100px_-20px_rgba(0,0,0,0.15)] transform group-hover:scale-[1.02] group-hover:rotate-1 transition-all duration-700" 
                   src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800"
                 />
-                {/* Glass reflections */}
-                <div className="absolute inset-0 rounded-[1.8rem] bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none"></div>
+                
+                <div className="absolute bottom-8 -right-8 bg-white p-8 rounded-[2rem] shadow-2xl border border-outline-variant/5 animate-float">
+                  <span className="block text-[10px] font-black uppercase tracking-widest text-primary mb-2">Destacado de la semana</span>
+                  <span className="block text-xl font-black text-on-surface uppercase tracking-tight max-w-[150px]">Teoría de la Estética</span>
+                </div>
               </div>
             </div>
           </div>

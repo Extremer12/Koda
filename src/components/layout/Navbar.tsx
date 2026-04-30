@@ -73,9 +73,9 @@ export function Navbar() {
           <div className="flex items-center gap-4 lg:gap-6">
             <div className="flex items-center gap-2 lg:gap-4">
 
-              {user ? (
+              {user && profile ? (
                 <>
-                  {profile?.role === 'admin' && (
+                  {profile.role === 'admin' && (
                     <Link 
                       to="/admin"
                       className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low text-error"
@@ -85,14 +85,14 @@ export function Navbar() {
                     </Link>
                   )}
                   <Link 
-                    to={profile?.role === 'creator' ? '/dashboard/creator' : '/dashboard/affiliate'}
+                    to={profile.role === 'creator' ? '/dashboard/creator' : '/dashboard/affiliate'}
                     className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
                     title="Panel de Control"
                   >
                     <span className="material-symbols-outlined text-on-surface-variant">dashboard</span>
                   </Link>
                   <Link 
-                    to={profile?.role === 'creator' ? '/dashboard/creator/settings' : '/dashboard/affiliate/settings'}
+                    to={profile.role === 'creator' ? '/dashboard/creator/settings' : '/dashboard/affiliate/settings'}
                     className="active:scale-95 transition-transform flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low"
                     title="Configuración"
                   >
@@ -112,7 +112,7 @@ export function Navbar() {
                     Iniciar Sesión
                   </Link>
                   <Link to="/login">
-                    <button className="bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest font-bold px-6 py-3 hover:brightness-110 active:scale-95 transition-all">
+                    <button className="bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest font-bold px-6 py-3 rounded-full hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20">
                       Empezar
                     </button>
                   </Link>
