@@ -50,51 +50,69 @@ export function RoleSelectionPage() {
           {/* Lector / Comprador */}
           <div 
             onClick={() => handleSelectRole('affiliate')}
-            className={`group bg-white rounded-[2.5rem] p-10 cursor-pointer animate-slide-up stagger-1 flex flex-col items-center text-center transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] border border-outline-variant/5 hover:border-primary/20 ${loading === 'affiliate' ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`group relative bg-white rounded-[2.5rem] p-10 cursor-pointer animate-slide-up stagger-1 flex flex-col items-center text-center transition-all duration-700 hover:shadow-[0_80px_120px_-30px_rgba(0,0,0,0.08)] border border-outline-variant/10 hover:border-primary/30 overflow-hidden ${loading === 'affiliate' ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <div className="w-20 h-20 rounded-full bg-surface-container-low text-primary flex items-center justify-center mb-8 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-              <span className="material-symbols-outlined text-4xl">local_library</span>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-1000"></div>
+            
+            <div className="w-24 h-24 rounded-3xl bg-surface-container-low text-primary flex items-center justify-center mb-10 group-hover:bg-primary group-hover:text-white group-hover:rotate-[10deg] transition-all duration-500 ease-spring">
+              <span className="material-symbols-outlined text-5xl">local_library</span>
             </div>
-            <h3 className="text-2xl font-black mb-4 uppercase tracking-tight">Solo Leer</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed mb-10 opacity-70">
-              Quiero explorar la biblioteca, descubrir autores independientes y comprar los mejores e-books del mercado.
+            
+            <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter group-hover:scale-105 transition-transform">Lector</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed mb-10 opacity-60 font-medium">
+              Explora la biblioteca luminosa, apoya a tus autores favoritos y adquiere conocimientos exclusivos.
             </p>
-            <div className="mt-auto pt-6 border-t border-outline-variant/5 w-full font-black text-[10px] uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
-              Explorar Catálogo
+            
+            <div className="mt-auto flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+              <span className="h-[2px] w-8 bg-primary/20 group-hover:w-12 transition-all"></span>
+              Empezar a leer
+              <span className="h-[2px] w-8 bg-primary/20 group-hover:w-12 transition-all"></span>
             </div>
           </div>
 
           {/* Creador / Vendedor */}
           <div 
             onClick={() => handleSelectRole('creator')}
-            className={`group bg-on-surface rounded-[2.5rem] p-10 cursor-pointer animate-slide-up stagger-2 flex flex-col items-center text-center transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(125,16,231,0.2)] border border-white/5 ${loading === 'creator' ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`group relative bg-on-surface rounded-[2.5rem] p-10 cursor-pointer animate-slide-up stagger-2 flex flex-col items-center text-center transition-all duration-700 hover:shadow-[0_80px_120px_-30px_rgba(125,16,231,0.2)] border border-white/5 overflow-hidden ${loading === 'creator' ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <div className="w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center mb-8 shadow-2xl shadow-primary/40 group-hover:scale-110 transition-all duration-500">
-              <span className="material-symbols-outlined text-4xl">menu_book</span>
+            <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+            
+            <div className="w-24 h-24 rounded-3xl bg-primary text-white flex items-center justify-center mb-10 shadow-2xl shadow-primary/40 group-hover:scale-110 group-hover:-rotate-[10deg] transition-all duration-500 ease-spring">
+              <span className="material-symbols-outlined text-5xl">menu_book</span>
             </div>
-            <h3 className="text-2xl font-black mb-4 uppercase tracking-tight text-white">Vender E-books</h3>
-            <p className="text-sm text-white/60 leading-relaxed mb-10">
-              Sube tus archivos y vende directamente. Ganancia neta del 91.5% con pagos automáticos vía Mercado Pago.
+            
+            <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter text-white group-hover:scale-105 transition-transform">Autor</h3>
+            <p className="text-sm text-white/50 leading-relaxed mb-10 font-medium">
+              Publica tus obras, monetiza tu conocimiento y gestiona tu catálogo con un panel de control profesional.
             </p>
-            <div className="mt-auto pt-6 border-t border-white/5 w-full font-black text-[10px] uppercase tracking-widest text-primary">
-              {loading === 'creator' ? 'Configurando...' : 'Crear mi Tienda'}
+            
+            <div className="mt-auto flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
+              <span className="h-[2px] w-8 bg-primary/40 group-hover:w-12 transition-all"></span>
+              {loading === 'creator' ? 'Configurando...' : 'Abrir mi tienda'}
+              <span className="h-[2px] w-8 bg-primary/40 group-hover:w-12 transition-all"></span>
             </div>
           </div>
 
           {/* Afiliado */}
           <div 
             onClick={() => handleSelectRole('affiliate')}
-            className={`group bg-white rounded-[2.5rem] p-10 cursor-pointer animate-slide-up stagger-3 flex flex-col items-center text-center transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] border border-outline-variant/5 hover:border-secondary/20 ${loading === 'affiliate' ? 'opacity-50 pointer-events-none' : ''}`}
+            className={`group relative bg-white rounded-[2.5rem] p-10 cursor-pointer animate-slide-up stagger-3 flex flex-col items-center text-center transition-all duration-700 hover:shadow-[0_80px_120px_-30px_rgba(0,0,0,0.08)] border border-outline-variant/10 hover:border-secondary/30 overflow-hidden ${loading === 'affiliate' ? 'opacity-50 pointer-events-none' : ''}`}
           >
-            <div className="w-20 h-20 rounded-full bg-surface-container-low text-secondary flex items-center justify-center mb-8 group-hover:bg-secondary group-hover:text-white transition-all duration-500">
-              <span className="material-symbols-outlined text-4xl">campaign</span>
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-secondary/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+            
+            <div className="w-24 h-24 rounded-3xl bg-surface-container-low text-secondary flex items-center justify-center mb-10 group-hover:bg-secondary group-hover:text-white group-hover:rotate-[5deg] transition-all duration-500 ease-spring">
+              <span className="material-symbols-outlined text-5xl">campaign</span>
             </div>
-            <h3 className="text-2xl font-black mb-4 uppercase tracking-tight">Ser Afiliado</h3>
-            <p className="text-sm text-on-surface-variant leading-relaxed mb-10 opacity-70">
-              Recomienda libros y gana hasta el 80%. Recibe tu dinero en el acto con nuestro sistema de Split Payment.
+            
+            <h3 className="text-3xl font-black mb-4 uppercase tracking-tighter group-hover:scale-105 transition-transform">Afiliado</h3>
+            <p className="text-sm text-on-surface-variant leading-relaxed mb-10 opacity-60 font-medium">
+              Únete a la red comercial, recomienda los mejores títulos y genera ingresos pasivos al instante.
             </p>
-            <div className="mt-auto pt-6 border-t border-outline-variant/5 w-full font-black text-[10px] uppercase tracking-widest text-secondary opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
-              Unirme a la Red
+            
+            <div className="mt-auto flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-secondary">
+              <span className="h-[2px] w-8 bg-secondary/20 group-hover:w-12 transition-all"></span>
+              Generar Ingresos
+              <span className="h-[2px] w-8 bg-secondary/20 group-hover:w-12 transition-all"></span>
             </div>
           </div>
         </div>

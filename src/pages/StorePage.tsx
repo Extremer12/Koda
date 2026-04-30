@@ -60,42 +60,56 @@ export function StorePage() {
       {/* Main Content */}
       <section className="flex-1 px-4 md:px-8 lg:px-12 py-8 min-w-0 bg-surface">
         {/* Hero Section */}
-        <header className="relative overflow-hidden rounded-[2.5rem] mb-12 p-8 md:p-16 flex flex-col justify-center min-h-[450px] hero-gradient shadow-2xl shadow-primary/10">
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+        <header className="relative overflow-hidden rounded-[3rem] mb-16 p-8 md:p-20 flex flex-col justify-center min-h-[500px] bg-on-surface shadow-[0_80px_160px_-40px_rgba(0,0,0,0.4)] group/hero">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] mix-blend-overlay"></div>
           </div>
-          <div className="relative z-10 max-w-2xl animate-slide-up">
-            <span className="inline-block px-4 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-[0.3em] mb-6 border border-white/20">
-              Catálogo Destacado
-            </span>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[0.95] mb-8 uppercase">
-              E-books <br /> <span className="text-on-primary-container">Premium</span>
+
+          <div className="relative z-10 max-w-3xl animate-fade-in">
+            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 mb-8 transform hover:scale-105 transition-transform cursor-default">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              <span className="text-white text-[10px] font-black uppercase tracking-[0.4em]">Curaduría Exclusiva</span>
+            </div>
+
+            <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.04em] leading-[0.85] mb-10 uppercase italic">
+              E-books <br /> 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-secondary animate-gradient-x">Premium</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-10 font-medium max-w-lg">
-              Descubre el conocimiento que transforma de la mano de creadores independientes y expertos.
+
+            <p className="text-xl md:text-2xl text-white/50 mb-12 font-medium max-w-xl leading-relaxed">
+              La biblioteca digital más elegante para mentes que buscan <span className="text-white">trascender.</span>
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-              <div className="flex-1 relative group">
+
+            <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-center">
+              <div className="flex-1 relative group/search">
                 <input 
-                  className="w-full pl-14 pr-6 py-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder:text-white/50 focus:ring-4 focus:ring-white/10 focus:bg-white/20 transition-all outline-none text-lg font-medium" 
-                  placeholder="Buscar títulos, autores..." 
+                  className="w-full pl-16 pr-8 py-6 rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-white/10 text-white placeholder:text-white/20 focus:ring-4 focus:ring-primary/20 focus:border-primary/50 transition-all outline-none text-lg font-bold uppercase tracking-tight" 
+                  placeholder="BUSCAR EN LA BIBLIOTECA..." 
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors text-2xl">search</span>
+                <span className="material-symbols-outlined absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within/search:text-primary transition-colors text-3xl">search</span>
               </div>
             </div>
           </div>
           
-          <div className="hidden xl:block absolute right-20 top-1/2 -translate-y-1/2 w-[320px] h-[450px] rotate-6 group-hover:rotate-2 transition-transform duration-1000 ease-out">
-            <div className="w-full h-full bg-gradient-to-br from-white/30 to-white/5 backdrop-blur-md rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.3)] border border-white/20 p-5 p-5 animate-float">
-              <img 
-                alt="Featured Book" 
-                className="w-full h-full object-cover rounded-[1.5rem] shadow-2xl" 
-                src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800"
-              />
+          {/* Floating Book Decoration */}
+          <div className="hidden xl:block absolute right-16 top-1/2 -translate-y-1/2 w-[350px] h-[500px] perspective-1000">
+            <div className="w-full h-full relative transform-gpu rotate-y-[-20deg] rotate-x-[10deg] group-hover/hero:rotate-y-[-5deg] group-hover/hero:rotate-x-[0deg] transition-all duration-1000 ease-out">
+              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75 group-hover/hero:scale-110 transition-transform duration-1000"></div>
+              <div className="relative w-full h-full bg-gradient-to-br from-white/10 to-transparent backdrop-blur-sm rounded-[2.5rem] border border-white/10 p-4 shadow-[0_60px_100px_-20px_rgba(0,0,0,0.5)]">
+                <img 
+                  alt="Featured Book" 
+                  className="w-full h-full object-cover rounded-[1.8rem] shadow-2xl brightness-90 group-hover/hero:brightness-110 transition-all duration-700" 
+                  src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800"
+                />
+                {/* Glass reflections */}
+                <div className="absolute inset-0 rounded-[1.8rem] bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none"></div>
+              </div>
             </div>
           </div>
         </header>
