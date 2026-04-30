@@ -6,6 +6,9 @@ export function Navbar() {
   const { user, profile, signOut } = useAuth();
   const location = useLocation();
 
+  const hideNav = ['/login', '/select-role'].includes(location.pathname);
+  if (hideNav) return null;
+
   return (
     <>
       <nav className="sticky top-0 z-50 w-full glass-nav luminous-shadow">

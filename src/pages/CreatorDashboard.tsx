@@ -94,10 +94,13 @@ export function CreatorDashboard() {
     }
 
     setSubmitting(true);
+    const toastId = toast.loading('Iniciando publicación...');
     try {
       const timestamp = Date.now();
       let coverUrl = '';
+      
       if (coverFile) {
+        toast.loading('Subiendo portada...', { id: toastId });
         const coverPath = `${user!.id}/${timestamp}-cover.${coverFile.name.split('.').pop()}`;
         const { error: coverErr } = await supabase.storage.from('covers').upload(coverPath, coverFile);
         if (coverErr) throw coverErr;
@@ -105,10 +108,12 @@ export function CreatorDashboard() {
         coverUrl = publicUrl;
       }
 
+      toast.loading('Subiendo archivo e-book (esto puede demorar)...', { id: toastId });
       const ebookPath = `${user!.id}/${timestamp}-ebook.${ebookFile.name.split('.').pop()}`;
       const { error: ebookErr } = await supabase.storage.from('ebooks').upload(ebookPath, ebookFile);
       if (ebookErr) throw ebookErr;
 
+      toast.loading('Finalizando publicación...', { id: toastId });
       const { error } = await supabase.from('ebooks').insert({
         title: formData.title.trim(),
         description: formData.description.trim() || null,
@@ -122,14 +127,15 @@ export function CreatorDashboard() {
 
       if (error) throw error;
 
-      toast.success('¡E-book publicado exitosamente!');
+      toast.success('¡E-book publicado exitosamente!', { id: toastId });
       setShowForm(false);
       setFormData({ title: '', description: '', price: '', category: 'general', commission_percent: '30' });
       setCoverFile(null);
       setEbookFile(null);
       refetchEbooks();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Error al publicar');
+      console.error('Error publishing:', err);
+      toast.error(err instanceof Error ? `Error: ${err.message}` : 'Error al publicar', { id: toastId });
     } finally {
       setSubmitting(false);
     }
@@ -386,53 +392,59 @@ export function CreatorDashboard() {
         </div>
       </div>
 
-      {/* New Ebook Modal */}
+      {/* Full Screen Ebook Form */}
       {showForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-secondary-dim/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white w-full max-w-2xl shadow-[0_80px_160px_-40px_rgba(45,47,44,0.3)] border border-[#f1f1ec] animate-scale-in">
-            <div className="p-8 md:p-12 border-b border-outline-variant/10 flex justify-between items-center">
-              <h3 className="font-headline font-bold text-2xl text-on-surface uppercase tracking-tight">Publicar Archivo</h3>
+        <div className="fixed inset-0 z-[100] bg-surface flex flex-col animate-fade-in overflow-y-auto">
+          <div className="max-w-4xl mx-auto w-full px-6 py-12 md:py-24">
+            <header className="flex justify-between items-center mb-12">
+              <div>
+                <span className="font-label text-[10px] uppercase tracking-[0.4em] text-primary font-black mb-2 block">Nueva Publicación</span>
+                <h2 className="font-headline font-black text-3xl md:text-5xl text-on-surface uppercase tracking-tight">Cargar Contenido</h2>
+              </div>
               <button 
                 onClick={() => setShowForm(false)}
-                className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors"
+                className="w-12 h-12 rounded-full border border-outline-variant/10 flex items-center justify-center hover:bg-surface-container-low transition-all"
               >
-                close
+                <span className="material-symbols-outlined">close</span>
               </button>
-            </div>
+            </header>
             
-            <form onSubmit={handleSubmit} className="p-8 md:p-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-6">
-                  <div className="space-y-2">
+            <form onSubmit={handleSubmit} className="space-y-12 pb-24">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+                <div className="space-y-8">
+                  <div className="space-y-4">
                     <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-title">Título de la Obra</label>
                     <input 
                       id="eb-title" 
-                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
-                      placeholder="EJ: TEORÍA DEL DISEÑO" 
+                      className="w-full bg-transparent border-b-2 border-outline-variant/10 py-4 font-headline font-bold text-xl md:text-2xl uppercase tracking-tight focus:outline-none focus:border-primary transition-colors placeholder:opacity-20" 
+                      placeholder="ESCRIBE EL TÍTULO AQUÍ" 
                       value={formData.title} 
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
                       required 
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-price">Precio Base (ARS)</label>
-                    <input 
-                      id="eb-price" 
-                      type="number"
-                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors" 
-                      placeholder="0.00" 
-                      value={formData.price} 
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })} 
-                      required 
-                    />
+                    <div className="relative">
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 font-headline font-bold text-xl opacity-30">$</span>
+                      <input 
+                        id="eb-price" 
+                        type="number"
+                        className="w-full bg-transparent border-b-2 border-outline-variant/10 pl-6 py-4 font-headline font-bold text-xl md:text-2xl uppercase tracking-tight focus:outline-none focus:border-primary transition-colors placeholder:opacity-20" 
+                        placeholder="0.00" 
+                        value={formData.price} 
+                        onChange={(e) => setFormData({ ...formData, price: e.target.value })} 
+                        required 
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant" htmlFor="eb-category">Categoría</label>
                     <select 
                       id="eb-category" 
-                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 font-label text-[10px] uppercase tracking-widest focus:outline-none focus:border-primary transition-colors"
+                      className="w-full bg-surface-container-low border border-outline-variant/10 rounded-2xl px-6 py-5 font-label text-[10px] font-bold uppercase tracking-[0.2em] focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
                       value={formData.category} 
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     >
@@ -442,64 +454,91 @@ export function CreatorDashboard() {
                     </select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-primary" htmlFor="eb-comm">Comisión Afiliados (%)</label>
+                  <div className="space-y-4 bg-primary/5 p-8 rounded-3xl border border-primary/10">
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="font-label text-[10px] uppercase tracking-widest font-bold text-primary" htmlFor="eb-comm">Comisión Afiliados (%)</label>
+                      <span className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full">{formData.commission_percent}%</span>
+                    </div>
                     <input 
                       id="eb-comm" 
-                      type="number"
+                      type="range"
                       max="90"
                       min="5"
-                      className="w-full bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 font-label text-sm uppercase tracking-widest focus:outline-none focus:border-primary transition-colors text-primary font-bold" 
+                      step="5"
+                      className="w-full h-1 bg-primary/20 rounded-lg appearance-none cursor-pointer accent-primary" 
                       value={formData.commission_percent} 
                       onChange={(e) => setFormData({ ...formData, commission_percent: e.target.value })} 
                       required 
                     />
-                    <p className="text-[8px] uppercase tracking-widest text-on-surface-variant opacity-40">Recomendamos entre 30% y 50% para atraer socios.</p>
+                    <p className="text-[9px] uppercase tracking-widest text-primary/60 font-medium">Recomendamos 40% para maximizar el alcance a través de socios.</p>
                   </div>
                 </div>
 
-                <div className="space-y-8">
-                   <div className="space-y-2">
-                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Portada (JPG/PNG)</label>
+                <div className="space-y-10">
+                   <div className="space-y-4">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Diseño de Portada</label>
                     <div 
                       onClick={() => coverInputRef.current?.click()}
-                      className="border border-dashed border-outline-variant/30 h-32 flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors"
+                      className={`relative aspect-[3/4] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden ${
+                        coverFile ? 'border-primary bg-primary/5' : 'border-outline-variant/20 hover:border-primary/50'
+                      }`}
                     >
-                      <span className="material-symbols-outlined text-primary/40 mb-2">image</span>
-                      <span className="font-label text-[8px] uppercase tracking-widest">{coverFile ? coverFile.name : 'Subir Imagen'}</span>
+                      {coverFile ? (
+                        <div className="text-center p-6">
+                           <span className="material-symbols-outlined text-primary text-5xl mb-4">check_circle</span>
+                           <p className="font-label text-xs font-bold uppercase tracking-widest text-primary">{coverFile.name}</p>
+                           <button className="mt-4 text-[10px] text-on-surface-variant uppercase tracking-widest underline">Cambiar imagen</button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-on-surface-variant text-5xl opacity-20 mb-4">add_photo_alternate</span>
+                          <span className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant opacity-40">Subir Portada (JPG/PNG)</span>
+                        </>
+                      )}
                     </div>
                     <input ref={coverInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={(e) => setCoverFile(e.target.files?.[0] || null)} />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Archivo Principal (PDF/EPUB)</label>
+                  <div className="space-y-4">
+                    <label className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Archivo Digital</label>
                     <div 
                       onClick={() => ebookInputRef.current?.click()}
-                      className="border border-dashed border-outline-variant/30 h-32 flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-low transition-colors"
+                      className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all ${
+                        ebookFile ? 'border-primary bg-primary/5' : 'border-outline-variant/20 hover:border-primary/50'
+                      }`}
                     >
-                      <span className="material-symbols-outlined text-primary/40 mb-2">upload_file</span>
-                      <span className="font-label text-[8px] uppercase tracking-widest">{ebookFile ? ebookFile.name : 'Subir Archivo'}</span>
+                      <span className={`material-symbols-outlined text-4xl mb-4 ${ebookFile ? 'text-primary' : 'text-on-surface-variant opacity-20'}`}>
+                        {ebookFile ? 'task' : 'upload_file'}
+                      </span>
+                      <span className="font-label text-[10px] uppercase tracking-widest font-bold text-center">
+                        {ebookFile ? ebookFile.name : 'Seleccionar PDF o EPUB'}
+                      </span>
                     </div>
                     <input ref={ebookInputRef} type="file" accept=".pdf,.epub" style={{ display: 'none' }} onChange={(e) => setEbookFile(e.target.files?.[0] || null)} />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-12 flex justify-end gap-6">
-                <button 
-                  type="button" 
-                  onClick={() => setShowForm(false)}
-                  className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-on-surface transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button 
-                  type="submit" 
-                  disabled={submitting}
-                  className="bg-primary px-8 py-4 text-on-primary font-label text-[10px] font-bold uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95"
-                >
-                  {submitting ? 'Publicando...' : 'Confirmar Publicación'}
-                </button>
+              <div className="pt-12 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-outline-variant/10">
+                <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-on-surface-variant opacity-40 max-w-sm text-center md:text-left">
+                  Al publicar, confirmas que posees los derechos de autor de esta obra y aceptas nuestros términos de servicio.
+                </p>
+                <div className="flex gap-4 w-full md:w-auto">
+                  <button 
+                    type="button" 
+                    onClick={() => setShowForm(false)}
+                    className="flex-1 md:flex-none px-10 py-5 font-label text-[10px] uppercase tracking-[0.2em] font-black text-on-surface-variant hover:text-on-surface transition-all"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={submitting}
+                    className="flex-1 md:flex-none bg-primary px-12 py-5 text-on-primary font-label text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 shadow-2xl shadow-primary/20"
+                  >
+                    {submitting ? 'Publicando...' : 'Publicar Ahora'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>

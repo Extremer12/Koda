@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export function Footer() {
+  const location = useLocation();
+  const hideNav = ['/login', '/select-role'].includes(location.pathname);
+  if (hideNav) return null;
   return (
     <footer className="w-full py-12 px-6 md:px-12 bg-white font-label text-sm tracking-wide mt-12 border-t border-outline-variant/10">
       <div className="flex flex-col md:flex-row justify-between items-center gap-8 max-w-[1920px] mx-auto">

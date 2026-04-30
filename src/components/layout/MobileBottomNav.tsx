@@ -5,6 +5,9 @@ export function MobileBottomNav() {
   const { profile } = useAuth();
   const location = useLocation();
 
+  const hideNav = ['/login', '/select-role'].includes(location.pathname);
+  if (hideNav) return null;
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
