@@ -112,7 +112,7 @@ export function Navbar() {
                     Iniciar Sesión
                   </Link>
                   <Link to="/login">
-                    <button className="bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest font-bold px-6 py-3 rounded-full hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20">
+                    <button className="bg-primary text-on-primary font-label text-[10px] uppercase tracking-widest font-bold px-6 py-3 hover:brightness-110 active:scale-95 transition-all">
                       Empezar
                     </button>
                   </Link>
